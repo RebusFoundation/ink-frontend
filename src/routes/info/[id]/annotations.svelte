@@ -2,7 +2,7 @@
   export async function preload(page, session) {
     const { id } = page.params;
     let book = {};
-    if (session.profile) {
+    if (session.user) {
       book = await this.fetch(`/api/book?url=${encodeURIComponent(`/${id}`)}`, {
         credentials: "include"
       })
@@ -98,12 +98,12 @@
     color: var(--medium);
     font-weight: 600;
   }
-  .InfoAttribution {
+  /* .InfoAttribution {
     margin: 0;
     font-style: italic;
     color: var(--medium);
     font-size: 0.85rem;
-  }
+  } */
   .InfoBody {
     margin: 0 1rem;
   }

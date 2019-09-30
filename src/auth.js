@@ -2,6 +2,7 @@
 import passport from "passport";
 import jwt from "jsonwebtoken";
 import got from "got";
+import httpStrategies from "passport-http";
 // import ms from 'ms'
 import debugSetup from "debug";
 import Auth0Strategy from "passport-auth0";
@@ -86,6 +87,17 @@ export function setup(app) {
     ) {
       res.redirect(req.session.returnTo || "/");
     });
+  } else {
+    passport.use(
+      new httpStrategies.BasicStrategy((username, password, callback) => {
+        if (password === "devpassword") {
+          const user = { id: `dev-testing11|${username}` };
+          return callback(null, user);
+        } else {
+          return callback(null, false);
+        }
+      })
+    );
   }
   app.use(
     "/login",
@@ -96,14 +108,15 @@ export function setup(app) {
   );
   app.use("/logout", (req, res) => {
     if (!req.user) return res.redirect("/");
-    req.session = null;
-    req.logout();
-    let redirect;
-    if (process.env.PASSPORT_STRATEGY === "auth0" && process.env.SIGNOUTURL) {
-      redirect = `https://${process.env.AUTH0_DOMAIN}/v2/logout?client_id=${process.env.AUTH0_CLIENT_ID}&returnTo=${process.env.SIGNOUTURL}`;
-    } else {
-      redirect = "/";
-    }
-    res.redirect(redirect);
+    req.session.destroy(() =>{
+      req.logout();
+      let redirect;
+      if (process.env.PASSPORT_STRATEGY === "auth0" && process.env.SIGNOUTURL) {
+        redirect = `https://${process.env.AUTH0_DOMAIN}/v2/logout?client_id=${process.env.AUTH0_CLIENT_ID}&returnTo=${process.env.SIGNOUTURL}`;
+      } else {
+        redirect = "/";
+      }
+      res.redirect(redirect);
+    });
   });
 }

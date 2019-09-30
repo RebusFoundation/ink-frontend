@@ -43,23 +43,23 @@ function parseNavHTML($, url) {
   $('nav[epub\\:type="toc"] > ol > li').each((i, element) =>
     parseListItem(i, element, toc, $)
   );
-  return toc;
-}
 
-function parseListItem(i, element, toc, $) {
-  const item = $(element);
-  const child = {
-    children: []
-  };
-  if (item.find("> a").length !== 0) {
-    child.label = item.find("> a").text();
-    child.url = item.find("> a").attr("href");
-  } else if (item.find("> span").length !== 0) {
-    child.label = item.find("> span").text();
+  function parseListItem(i, element, item, $) {
+    const el = $(element);
+    const child = {
+      children: []
+    };
+    if (el.find("> a").length !== 0) {
+      child.label = el.find("> a").text();
+      child.url = el.find("> a").attr("href");
+    } else if (el.find("> span").length !== 0) {
+      child.label = el.find("> span").text();
+    }
+    const children = el.find("> ol > li");
+    children.each((i, element) => parseListItem(i, element, child, $));
+    item.children = item.children.concat(child);
   }
-  const children = item.find("> ol > li");
-  children.each((i, element) => parseListItem(i, element, child, $));
-  toc.children = toc.children.concat(child);
+  return toc;
 }
 
 function parseNCX($, url) {
@@ -73,27 +73,26 @@ function parseNCX($, url) {
   $("navMap > navPoint").each((i, element) =>
     parseNavPoint(i, element, toc, $)
   );
+  function parseNavPoint(i, element, item, $) {
+    const point = $(element);
+    const label = point.find("> navLabel").text();
+    const url = getPath(point.find("content").attr("src"), toc.url);
+    const child = {
+      label,
+      url,
+      children: []
+    };
+    const children = point.find("> navPoint");
+    if (point.length !== 0) {
+      children.each((i, element) => parseNavPoint(i, element, child, $));
+    }
+    item.children = item.children.concat(child);
+  }
   return toc;
 }
 
-function parseNavPoint(i, element, toc, $) {
-  const point = $(element);
-  const label = point.find("> navLabel").text();
-  const url = getPath(point.find("content").attr("src"), toc.url);
-  const child = {
-    label,
-    url,
-    children: []
-  };
-  const children = point.find("> navPoint");
-  if (point.length !== 0) {
-    children.each((i, element) => parseNavPoint(i, element, child, $));
-  }
-  toc.children = toc.children.concat(child);
-}
-
 function getPath(path, opfPath) {
-  const opf = new URL(opfPath, "http://example.com/");
+  const opf = new URL(opfPath, process.env.API_SERVER);
   // If host is example.com, then this is a local request
   const url = new URL(path, opf);
   return PREFIX + url.pathname + url.hash;

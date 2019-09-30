@@ -1,7 +1,7 @@
 <script context="module">
   export async function preload(page, session) {
     let recent;
-    if (session.profile && session.profile.status !== 404) {
+    if (session.user && session.user.profile && session.user.profile) {
       recent = await this.fetch(`/recent.json`, { credentials: "include" })
         .then(response => response.json())
         .catch(err => this.error(err));

@@ -4,7 +4,7 @@
       const { collection } = page.params;
       const { orderBy = "datePublished", reverse = "false" } = page.query;
       let books = { items: [] };
-      if (session.profile) {
+      if (session.user) {
         books = await this.fetch(
           `/api/collections?collection=${encodeURIComponent(
             collection

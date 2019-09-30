@@ -81,6 +81,7 @@ export default {
         "process.browser": false,
         "process.env.NODE_ENV": JSON.stringify(mode)
       }),
+      json(),
       svelte({
         generate: "ssr",
         dev

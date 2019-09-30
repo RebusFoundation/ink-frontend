@@ -2,7 +2,7 @@
   export async function preload(page, session) {
     const { id } = page.params;
     let book = {};
-    if (session.profile) {
+    if (session.user) {
       book = await this.fetch(`/api/book?url=${encodeURIComponent(`/${id}`)}`, {
         credentials: "include"
       })

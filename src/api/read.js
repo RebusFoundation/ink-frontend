@@ -1,11 +1,7 @@
-import { fetchWrap, get } from "./fetch-wrap.js";
+import { fetchWrap } from "./fetch-wrap.js";
 import { getToken } from "./get-cookie.js";
 
 export async function read(context, location, path) {
-  const response = await window.fetch("/api/whoami", {
-    credentials: "include"
-  });
-  const { profile } = await response.json();
   try {
     const csrfToken = getToken();
     const response = await fetchWrap("/api/create", {
@@ -24,7 +20,7 @@ export async function read(context, location, path) {
         }
       }),
       headers: new window.Headers({
-        "content-type": "application/ld+json",
+        "content-type": "application/json",
         "csrf-token": csrfToken
       })
     });

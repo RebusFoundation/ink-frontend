@@ -19,8 +19,5 @@ export async function get(req, res, next) {
       };
     }
   }
-  const newSession = {...req.session}
-  newSession.profile = data.profile
-  req.session = newSession;
   return res.json(data);
 }

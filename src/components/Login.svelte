@@ -79,7 +79,7 @@
               action="/login?returnTo=%2Flibrary"
               method="POST"
               id="sign-up-form">
-              <input type="hidden" name="_csrf" value={getToken()} />
+              <!-- <input type="hidden" name="_csrf" value={getToken()} /> -->
               <button
                 class="Button"
                 on:click={() => document
@@ -100,7 +100,7 @@
           <div class="Modal-row">
             <span />
             <form action="/login" method="POST" id="sign-in-form">
-              <input type="hidden" name="_csrf" value={getToken()} />
+              <!-- <input type="hidden" name="_csrf" value={getToken()} /> -->
               <button
                 class="Button"
                 on:click={() => document

@@ -1,4 +1,4 @@
-import { fetchWrap, get } from "./fetch-wrap.js";
+import { fetchWrap } from "./fetch-wrap.js";
 import { getToken } from "./get-cookie.js";
 
 export async function update(payload) {
@@ -20,7 +20,7 @@ export async function update(payload) {
         object: payload
       }),
       headers: new window.Headers({
-        "content-type": "application/ld+json",
+        "content-type": "application/json",
         "csrf-token": csrfToken
       })
     });

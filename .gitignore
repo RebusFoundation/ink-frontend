@@ -7,6 +7,8 @@ yarn-error.log
 /functions/__sapper__/
 /static/js/
 /.firebase/
+keyfile.json
+/level-session-store/
 <<<<<<< HEAD
 .env
 =======

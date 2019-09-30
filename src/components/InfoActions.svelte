@@ -98,8 +98,6 @@
     min-width: 250px;
     max-width: 450px;
   }
-  .CollectionsList {
-  }
   .CollectionsList label {
     font-size: 0.85rem;
     display: flex;

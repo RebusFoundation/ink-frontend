@@ -12,6 +12,22 @@ process.env.ISSUER = env.token.issuer
 process.env.AUDIENCE = env.token.audience
 process.env.SECRETORKEY = env.token.secret
 process.env.SIGNOUTURL = env.signout.url
+const { NODE_ENV } = process.env;
+const dev = NODE_ENV === "development";
+
+const admin = require('firebase-admin');
+const firebase = admin.initializeApp();
+const database = firebase.firestore();
+const session = require( 'express-session' );
+const FirestoreStore = require( 'firestore-store' )(session);
+const middleware = session({
+  store: new FirestoreStore({database}),
+  secret: process.env.COOKIE_KEY,
+  resave: true,
+  rolling: true,
+  saveUninitialized: false,
+  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, secure: !dev, name: "__session" }
+});
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
@@ -20,10 +36,8 @@ process.env.SIGNOUTURL = env.signout.url
 //  response.send("Hello from Firebase!");
 // });
 
-const express = require('express');
-
 // We have to import the built version of the server middleware.
-const { app } = require('./__sapper__/build/server/server');
+const { setup } = require('./__sapper__/build/server/server');
 
 // exports.ssr = functions.https.onRequest(app);
-exports.ssr = functions.https.onRequest(app);
+exports.ssr = functions.https.onRequest(setup({firebase, session: middleware}));
