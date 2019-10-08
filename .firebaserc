@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "thematic-cider-139815"
+    "default": "thematic-cider-139815",
+    "dev": "ink-frontend-dev"
   }
 }

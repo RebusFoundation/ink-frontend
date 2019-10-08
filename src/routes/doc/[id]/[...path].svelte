@@ -1,7 +1,7 @@
 <script context="module">
-  import {preload as _preload} from './_preload.js'
+  import { preload as _preload } from "./_preload.js";
   // your script goes here
-  export const preload = _preload
+  export const preload = _preload;
 </script>
 
 <script>
@@ -14,10 +14,11 @@
   import Button from "../../../components/Button.svelte";
   import InfoActions from "../../../components/InfoActions.svelte";
   import { read } from "../../../api/read.js";
-  import {handleHighlight, highlightNotes}  from "./_handleHighlight.js"
-  import {
-    book as bookStore,
-    chapter as chapterStore,
+  import { handleHighlight, highlightNotes } from "./_handleHighlight.js";
+  import { stores } from "../../../stores";
+  const {
+    docStore,
+    chapterStore,
     navigation,
     contents,
     currentLocation,
@@ -26,7 +27,7 @@
     chapterTitle,
     configuringReader,
     notes
-  } from "../../../doc/stores.js";
+  } = stores();
   function handleCurrent({ detail }) {
     currentLocation.set({
       location: detail.highest.dataset.location
@@ -47,12 +48,12 @@
     );
   }
   $: if (bookBody && $notes.items) {
-    highlightNotes(bookBody, $notes)
+    highlightNotes(bookBody, $notes);
   }
   export let book;
   export let chapter;
   $: if (book) {
-    bookStore.set(book);
+    docStore.set(book);
   }
   $: if (chapter) {
     chapterStore.set(chapter);
@@ -77,40 +78,40 @@
   onMount(async () => {
     window.lifecycle.addEventListener("statechange", handleLifeCycle);
     await tick();
-    if ($bookStore.position && $bookStore.position.path === $chapterStore.url) {
+    if ($docStore.position && $docStore.position.path === $chapterStore.url) {
       const location = document.querySelector(
-        `[data-location="${$bookStore.position.location}"]`
+        `[data-location="${$docStore.position.location}"]`
       );
       if (location) {
         location.scrollIntoView({ behavior: "smooth" });
       }
-    };
+    }
   });
   onDestroy(() => {
-      const location = $currentLocation.location;
-      const chapter = $chapterStore.url;
-      const url = new URL(`/${$bookStore.id}/`, $chapterStore.url).href
+    const location = $currentLocation.location;
+    const chapter = $chapterStore.url;
+    const url = new URL(`/${$docStore.id}/`, $chapterStore.url).href;
 
-      read(url, location, chapter);
-      window.lifecycle.removeEventListener("statechange", handleLifeCycle);
-    })
+    read(url, location, chapter);
+    window.lifecycle.removeEventListener("statechange", handleLifeCycle);
+  });
   function handleLifeCycle(event) {
     if (
       window.lifecycle.state === "passive" &&
       event.oldState === "active" &&
       $currentLocation
     ) {
-      const url = new URL(`/${$bookStore.id}/`, $chapterStore.url).href
+      const url = new URL(`/${$docStore.id}/`, $chapterStore.url).href;
       read(url, $currentLocation.location, $chapterStore.url);
     }
   }
-  let selectionRange = null
-  document.addEventListener('selectionchange', () => {
-    const selection = document.getSelection()
+  let selectionRange = null;
+  document.addEventListener("selectionchange", () => {
+    const selection = document.getSelection();
     if (selection && !selection.isCollapsed) {
-      selectionRange = selection.getRangeAt(0)
+      selectionRange = selection.getRangeAt(0);
     } else {
-      selectionRange = null
+      selectionRange = null;
     }
   });
 </script>
@@ -264,9 +265,7 @@
     class:sidebar={sidebargrid}
     data-current={$currentLocation.location}>
     {#if sidebar}
-      <div
-        bind:clientWidth={sidebarWidth}
-        class="Sidebar">
+      <div bind:clientWidth={sidebarWidth} class="Sidebar">
         <BookContents modal={false} />
       </div>
     {/if}
@@ -280,7 +279,7 @@
           {width}
           on:toggle-sidebar={() => {
             sidebar = !sidebar;
-            sidebargrid = !sidebargrid
+            sidebargrid = !sidebargrid;
           }} />
       </span>
       <span slot="toolbar-title">
@@ -410,11 +409,14 @@
 
     {#if $navigation}
       <Navbar navigation={$navigation}>
-      {#if selectionRange}
-         <Button click={() => {
-           handleHighlight(selectionRange, bookBody, chapter)
-         }}>Highlight</Button>
-      {/if}
+        {#if selectionRange}
+          <Button
+            click={() => {
+              handleHighlight(selectionRange, bookBody, chapter);
+            }}>
+            Highlight
+          </Button>
+        {/if}
       </Navbar>
     {:else}
       <Navbar />

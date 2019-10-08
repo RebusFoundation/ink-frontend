@@ -7,6 +7,7 @@ yarn-error.log
 /functions/__sapper__/
 /static/js/
 /.firebase/
+/.nyc_output/
 keyfile.json
 /level-session-store/
 <<<<<<< HEAD

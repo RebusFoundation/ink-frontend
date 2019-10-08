@@ -1,8 +1,10 @@
 import { writable } from "svelte/store";
+// import { goto } from "@sapper/app";
+// import { decode, encode } from "universal-base64url";
 
 export const modal = writable();
 
-let activeModal;
+export let activeModal;
 modal.subscribe(value => {
   activeModal = value;
 });
@@ -17,6 +19,33 @@ export function open(node, options) {
       event.preventDefault();
       event.stopPropagation();
       opener(this.options);
+    }
+  };
+  node.addEventListener("click", eventHandler);
+  return {
+    update(props) {
+      eventHandler.options = props;
+    },
+    destroy() {
+      node.removeEventListener("click", eventHandler);
+    }
+  };
+}
+export function sidebar(node, options) {
+  const eventHandler = {
+    options,
+    handleEvent(event) {
+      // Based on https://github.com/visionmedia/page.js/blob/master/index.js
+      // MIT License
+      if ((event.which === null ? event.button : event.which) !== 1) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey) return;
+      if (event.defaultPrevented) return;
+      if (!event.target.closest('[data-open-in-modal="true"]')) {
+        if (activeModal) return;
+        event.preventDefault();
+        event.stopPropagation();
+        opener(this.options);
+      }
     }
   };
   node.addEventListener("click", eventHandler);

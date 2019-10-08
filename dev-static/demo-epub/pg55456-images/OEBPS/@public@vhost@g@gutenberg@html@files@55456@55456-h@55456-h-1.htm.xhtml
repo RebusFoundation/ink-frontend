@@ -8,6 +8,34 @@
 <title>The Project Gutenberg eBook of Aventures d'Alice au pays des merveilles, by Lewis Carroll, John Tenniel and Henri Bué</title>
 <style>body {
   background-color: white;
+}
+@font-face {
+  font-family: "Open Sans";
+  src: url("/fonts/OpenSans-Regular-webfont.woff2") format("woff2"),
+       url("/fonts/OpenSans-Regular-webfont.woff") format("woff");
+}
+@keyframes slidein {
+  from {
+    transform: translateX(0%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
+@media screen and (min-width: 900px) {
+  article {
+    padding: 1rem 3rem;
+  }
+}
+div {
+  background-color: url("https://example.com/background-image.png");
+}
+p {
+  background-color: url("http://example.com/background-image.png");
+}
+h1 {
+  background-color: url("https://www.example.com/background-image.png");
 }</style>
 <link rel="coverpage" href="@public@vhost@g@gutenberg@html@files@55456@55456-h@images@cover.jpg" tag="{http://www.w3.org/1999/xhtml}link"/>
 
@@ -21,10 +49,10 @@
 <body><div class="texte600" epub:type="bodymatter">
   <a id="inserted-xml-test" />
 <p><a href="@public@vhost@g@gutenberg@html@files@55456@55456-h@55456-h-6.htm.html#note_au_lecteur" class="pginternal" tag="{http://www.w3.org/1999/xhtml}a">Au lecteur</a></p>
-<p><a href="@public@vhost@g@gutenberg@html@files@55456@55456-h@55456-h-1.htm.html#table_des_chapitres" class="pginternal" tag="{http://www.w3.org/1999/xhtml}a">Table</a></p>
+<p style='background-image: url("https://www.example.com/background-image.png");'><a href="@public@vhost@g@gutenberg@html@files@55456@55456-h@55456-h-1.htm.html#table_des_chapitres" class="pginternal" tag="{http://www.w3.org/1999/xhtml}a">Table</a></p>
 <div class="figcenter c1"><img src="@public@vhost@g@gutenberg@html@files@55456@55456-h@images@couverture.jpg" alt="" tag="{http://www.w3.org/1999/xhtml}img"/></div>
-<div class="nextpage" id="pgepubid00000">
-<h1>AVENTURES D’ALICE<br/>
+<div class="nextpage" id="pgepubid00000" style='background-image: url("https://example.com/background-image.png");'>
+<h1 style='background-image: url("http://example.com/background-image.png");'>AVENTURES D’ALICE<br/>
 AU<br/>
 PAYS DES MERVEILLES.</h1>
 </div>

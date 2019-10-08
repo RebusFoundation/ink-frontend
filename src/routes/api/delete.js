@@ -1,8 +1,8 @@
 import got from "got";
 export async function post(req, res, next) {
   if (req.user && req.user.profile) {
-    if (typeof req.body !== 'string') {
-      req.body = JSON.stringify(req.body)
+    if (typeof req.body !== "string") {
+      req.body = JSON.stringify(req.body);
     }
     try {
       const response = await got.post(req.user.profile.outbox, {

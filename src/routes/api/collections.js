@@ -3,7 +3,13 @@ import { normalise } from "../../api/normalise-publication.js";
 import querystring from "querystring";
 const LIMIT = 25;
 export async function get(req, res, next) {
-  const { page = 1, collection, reverse, orderBy } = req.query;
+  const {
+    page = 1,
+    collection,
+    reverse,
+    orderBy,
+    type = "library"
+  } = req.query;
   if (req.user && req.user.profile && req.user.profile.id) {
     try {
       let url;
@@ -18,7 +24,11 @@ export async function get(req, res, next) {
         if (reverse !== "false") {
           query.reverse = reverse;
         }
-        url = `${req.user.profile.id}/library?${querystring.encode(query)}`;
+        if (type === "library") {
+          url = `${req.user.profile.id}/library?${querystring.encode(query)}`;
+        } else if (type === "notes") {
+          url = `${req.user.profile.id}/notes?${querystring.encode(query)}`;
+        }
       } else {
         const query = {
           page,
@@ -39,7 +49,9 @@ export async function get(req, res, next) {
         },
         json: true
       });
-      response.body.items = response.body.items.map(normalise);
+      if (type === "library") {
+        response.body.items = response.body.items.map(normalise);
+      }
       if (response.body.items.length === 0) {
         response.body.done = true;
       }

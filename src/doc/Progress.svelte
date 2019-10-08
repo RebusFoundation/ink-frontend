@@ -19,7 +19,7 @@
   .current {
     fill: var(--rc-darker);
   }
-  
+
   button.Toolbar-link.Progress {
     /* position: fixed;
     top: 40px;

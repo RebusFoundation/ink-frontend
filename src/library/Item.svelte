@@ -1,6 +1,8 @@
 <script>
-  import { book as item, current } from "../stores/book.js";
-  import { open } from "../actions/modal.js";
+  import { stores } from "../stores";
+  import { sidebar as open } from "../actions/modal.js";
+  import { goto } from "@sapper/app";
+  const { infoBook, currentInfoBook } = stores();
   export let author;
   export let resources;
   export let tags;
@@ -20,6 +22,12 @@
   export let translator;
   export let illustrator;
   export let contributor;
+  export let inLanguage = "en";
+  export let current;
+  function handleClick(event) {
+    infoBook.set({ name, id, url, cover });
+    currentInfoBook.set("");
+  }
 </script>
 
 <style>
@@ -30,30 +38,20 @@
   .LibraryItem > .covers {
     display: grid;
   }
-  @keyframes withinPop {
-    0% {
-      box-shadow: 0 0 0 5px rgb(228, 255, 254, 0.2);
-      background-color: rgb(228, 255, 254, 0.2);
-    }
-    50% {
-      background-color: rgb(228, 255, 254, 0.8);
-      box-shadow: 0 0 0 5px rgb(228, 255, 254, 0.8);
-    }
-    100% {
-      box-shadow: 0 0 0 5px var(--rc-lighter);
-      background-color: var(--rc-lighter);
-    }
-  }
   .LibraryItem > .covers:focus-within {
     background-color: var(--rc-lighter);
     box-shadow: 0 0 0 5px var(--rc-lighter);
-    animation: withinPop 0.25s ease-in-out;
   }
   .list {
     display: grid;
     border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 0.25rem;
-    padding-bottom: 0.5rem;
+    padding: 0.5rem;
+    grid-gap: 1rem;
+    grid-template-columns: 3rem 1fr;
+  }
+  .list:hover {
+    cursor: pointer;
+    background-color: #f9f9f9;
   }
 
   .BookCard-group {
@@ -89,6 +87,7 @@
     font-style: italic;
     text-decoration: none;
     color: #666;
+    margin-right: 0.25rem;
   }
   .BookCard-attributionLabel {
     font-weight: 300;
@@ -98,7 +97,20 @@
     text-decoration: none;
     font-weight: inherit;
     color: var(--dark);
-    display: inline-block;
+    display: block;
+    position: relative;
+  }
+  .BookCard-link::after {
+    content: "";
+    position: absolute;
+    left: -1rem;
+    top: -1rem;
+    width: 100%;
+    height: 100%;
+    padding-bottom: 4rem;
+    box-sizing: border-box;
+    background-color: transparent;
+    /*Other styles*/
   }
   .BookCard-paragraph {
     line-height: 0.75rem;
@@ -143,50 +155,53 @@
     pointer-events: all;
   }
   .list .BookCard-icon {
-    display: none;
+    height: 3rem;
+    width: 3rem;
   }
   .list .BookCard-paragraph {
     padding: 0;
     margin: 0;
   }
-  @keyframes outlinePop {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.2);
-    }
-    100% {
-      transform: scale(1);
-    }
+  .list .BookCard-title {
+    margin: 0rem 0 0.25rem;
+    font-weight: 700;
+    font-size: 1rem;
   }
-  a:focus {
-    background-color: var(--rc-lighter);
-    box-shadow: 0 0 0 5px var(--rc-lighter);
-    outline: solid transparent;
-    animation: outlinePop 0.25s ease-in-out;
+  .list .BookCard-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .LibraryItem.current {
+    background-color: var(--sidebar-background-color);
   }
 </style>
 
 <!-- markup (zero or more items) goes here -->
-<div class="LibraryItem">
+<div class="LibraryItem" class:current={current === id}>
   <div class={layout}>
     <a
-      href={url}
+      data-sidebar={id}
+      href={url + 'metadata'}
       class="icon-link"
       use:open={{ id: 'item-modal' }}
-      on:click={() => {
-        item.set({ name, id, url, cover });
-        current.set('');
-      }}>
+      on:click={handleClick}>
       <img class="BookCard-icon" alt={'Cover for ' + name} src={cover} />
     </a>
     {#if layout === 'square'}
-      <a href={url} class="BookCard-overlay">{name}</a>
+      <a href={url + 'metadata'} class="BookCard-overlay">{name}</a>
     {/if}
     <div class="BookCard-group">
       <h4 class="BookCard-title">
-        <a href={url} class="BookCard-link">{name}</a>
+        <a
+          href={url + 'metadata'}
+          class="BookCard-link"
+          data-sidebar={id}
+          use:open={{ id: 'item-modal' }}
+          on:click={handleClick}>
+          {name}
+        </a>
       </h4>
       <p class="BookCard-paragraph">
         {#each author as attribution}

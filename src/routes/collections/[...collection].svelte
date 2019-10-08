@@ -1,14 +1,23 @@
 <script context="module">
+  import { decode, encode } from "universal-base64url";
   export async function preload(page, session) {
     try {
-      const { collection } = page.params;
-      const { orderBy = "datePublished", reverse = "false" } = page.query;
+      const [
+        collection,
+        type = "library",
+        sidebarEncoded
+      ] = page.params.collection;
+      const {
+        orderBy = "datePublished",
+        reverse = "false",
+        layout = "list"
+      } = page.query;
       let books = { items: [] };
       if (session.user) {
         books = await this.fetch(
           `/api/collections?collection=${encodeURIComponent(
             collection
-          )}&page=1&orderBy=${orderBy}&reverse=${reverse}`,
+          )}&page=1&orderBy=${orderBy}&reverse=${reverse}&type=${type}`,
           {
             credentials: "include"
           }
@@ -18,32 +27,64 @@
       if (books.totalItems === books.items.length || books.items.length === 0) {
         hideLoadMore = true;
       }
+      let sidebar;
+      if (sidebarEncoded) {
+        sidebar = decode(sidebarEncoded);
+      } else {
+        sidebar = "";
+      }
       return {
         items: books.items,
         collection,
         page: books.page,
         selected: `${orderBy}${reverse === "false" ? "" : "-reversed"}`,
-        hideLoadMore
+        hideLoadMore,
+        layout,
+        sidebar,
+        type
       };
     } catch (err) {
       console.log(err);
-      return { items: [], collection };
+      return { items: [], collection, layout };
     }
   }
 </script>
 
 <script>
   import Toolbar from "../../components/Toolbar.svelte";
+  import WithSidebars from "../../components/WithSidebars.svelte";
+  import Collections from "../../collections/Collections.svelte";
   import Button from "../../components/Button.svelte";
   import List from "../../library/List.svelte";
+  import NotesList from "../../library/NotesList.svelte";
+  import CollectionTabs from "../../library/CollectionTabs.svelte";
+  import InfoActions from "../../components/InfoActions.svelte";
   import * as sapper from "@sapper/app";
   import { profile } from "../_profile.js";
   import { open } from "../../actions/modal.js";
+  import { stores } from "../../stores";
+  import { writable } from "svelte/store";
+  import { fly } from "svelte/transition";
+  const { infoBook, currentInfoBook, title } = stores();
   export let items;
   export let collection;
   export let selected;
   export let page;
   export let hideLoadMore = false;
+  export let layout;
+  export let type = "library";
+  export let sidebar;
+  title.set(collection);
+  let notes;
+  let library;
+  const search = writable(window.location.search);
+  $: if ($search) {
+    notes = `/collections/${collection}/notes${$search}`;
+    library = `/collections/${collection}${$search}`;
+  } else {
+    notes = `/collections/${collection}/notes`;
+    library = `/collections/${collection}`;
+  }
   const options = [
     {
       text: "Newest first",
@@ -92,11 +133,13 @@
         page: 1
       };
       if (value[1]) {
-        newOorderrder.reverse = "&reverse=true";
+        order.reverse = "&reverse=true";
       }
     }
+    search.set(`${order.orderBy}${order.reverse}`);
+    const sidebarEncoded = sidebar ? encode(sidebar) : "";
     return sapper.goto(
-      `/collections/${collection}${order.orderBy}${order.reverse}`
+      `/collections/${collection}/${type}/${sidebarEncoded}${order.orderBy}${order.reverse}`
     );
   }
   async function loadMore() {
@@ -104,7 +147,9 @@
       const libraryAdditions = await window
         .fetch(
           `/api/collections?collection=${collection}&page=${order.page +
-            1}${order.orderBy && order.orderBy.slice(1)}${order.reverse}`,
+            1}${order.orderBy && order.orderBy.slice(1)}${
+            order.reverse
+          }&type=${type}`,
           {
             credentials: "include"
           }
@@ -141,10 +186,14 @@
       }
     };
   }
+  $: if (sidebar) {
+    infoBook.set({ id: sidebar });
+    currentInfoBook.set("");
+  }
 </script>
 
 <style>
-  .Front {
+  .CollectionsMain {
     padding: var(--reader-left-margin);
   }
 
@@ -182,23 +231,6 @@
     border-color: var(--rc-main);
     cursor: pointer;
   }
-  @keyframes outlinePop {
-    0% {
-      box-shadow: 0 0 0 1px rgba(33, 33, 33, 0);
-    }
-    50% {
-      box-shadow: 0 0 0 8px var(--rc-darker);
-    }
-    100% {
-      box-shadow: 0 0 0 3px var(--rc-dark);
-    }
-  }
-  select:focus {
-    box-shadow: 0 0 0 3px var(--rc-dark);
-
-    outline: solid transparent;
-    animation: outlinePop 0.25s ease-in-out;
-  }
   select option {
     font-weight: normal;
     text-transform: none;
@@ -213,55 +245,56 @@
   .ViewConfig {
     margin: 0 auto 1rem;
     text-align: right;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 </style>
 
 <svelte:head>
   <title>{collection === 'all' ? 'All' : collection} – Rebus Ink</title>
 </svelte:head>
-<!-- Menubar -->
-<Toolbar>
-  <a
-    use:open={{ id: 'collections-modal' }}
-    slot="left-button"
-    href="/"
-    class="Toolbar-link">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="square"
-      stroke-linejoin="round">
-      <line x1="3" y1="12" x2="21" y2="12" />
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <line x1="3" y1="18" x2="21" y2="18" />
-    </svg>
-  </a>
-  <span slot="toolbar-title">{collection}</span>
-</Toolbar>
-<div class="Front">
+
+<div
+  class="CollectionsMain"
+  in:fly={{ y: 200, duration: 250, delay: 250 }}
+  out:fly={{ y: 200, duration: 250 }}>
   <div class="ViewConfig">
-    Ordered By
-    <label>
-      <select name="viewConfig" id="viewConfig" on:change={onSelect}>
-        {#each options as option}
-          <option
-            value={option.value}
-            selected={option.selected}
-            aria-label={option.label || option.text}>
-            {option.text}
-          </option>
-        {/each}
-      </select>
-    </label>
+    <CollectionTabs {collection} current={type} {notes} {library} />
+    {#if type === 'library'}
+      <div class="select">
+        Ordered By
+        <label>
+          <select name="viewConfig" id="viewConfig" on:change={onSelect}>
+            {#each options as option}
+              <option
+                value={option.value}
+                selected={option.selected}
+                aria-label={option.label || option.text}>
+                {option.text}
+              </option>
+            {/each}
+          </select>
+        </label>
+      </div>
+    {/if}
   </div>
   <!-- Recent -->
   {#if items}
-    <List list={items} />
+    {#if type === 'library'}
+      <List
+        list={items}
+        {layout}
+        withSidebar={true}
+        {collection}
+        current={sidebar} />
+    {:else}
+      <NotesList
+        notes={items}
+        {collection}
+        current={sidebar}
+        withSidebar={true} />
+    {/if}
   {/if}
   <span class="buttonWrapper" use:observe>
     <Button

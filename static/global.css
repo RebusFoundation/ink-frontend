@@ -286,8 +286,8 @@ img {
   max-width: 100%;
 }
 *:focus {
-  outline: 2px solid #b8f4f266;
-  outline-offset: 0;
+  outline: 2px solid #68d6d499;
+  outline-offset: 2px;
 }
 
 ink-modal[aria-hidden="true"],
@@ -467,7 +467,6 @@ a:link:hover {
   color: var(--hover);
 }
 a {
-  border-radius: 2rem;
 }
 @keyframes outlinePop {
   0% {

@@ -19,8 +19,6 @@
     ]
   },
   "dependencies": {
-    "firebase-admin": "^8.0.0",
-    "firebase-functions": "^3.1.0",
     "@pika/web": "^0.5.3",
     "async-es": "^2.6.3",
     "cheerio": "^1.0.0-rc.3",
@@ -38,7 +36,10 @@
     "express": "^4.17.1",
     "express-session": "^1.16.2",
     "file-drop-element": "^0.2.0",
+    "firebase-admin": "^8.0.0",
+    "firebase-functions": "^3.1.0",
     "firebase-tools": "^6.8.0",
+    "firestore-store": "^2.0.0",
     "got": "^9.6.0",
     "idb-keyval": "^3.2.0",
     "inert-polyfill": "^0.2.5",

@@ -15,6 +15,11 @@ process.env.SIGNOUTURL = env.signout.url
 const { NODE_ENV } = process.env;
 const dev = NODE_ENV === "development";
 
+const runtimeOpts = {
+  timeoutSeconds: 300,
+  memory: '512MB'
+}
+
 const admin = require('firebase-admin');
 const firebase = admin.initializeApp();
 const database = firebase.firestore();
@@ -40,4 +45,7 @@ const middleware = session({
 const { setup } = require('./__sapper__/build/server/server');
 
 // exports.ssr = functions.https.onRequest(app);
-exports.ssr = functions.https.onRequest(setup({firebase, session: middleware}));
+exports.ssr = functions
+  .runWith(runtimeOpts)
+  .https
+  .onRequest(setup({firebase, session: middleware}));

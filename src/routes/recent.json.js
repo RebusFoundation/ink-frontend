@@ -18,6 +18,7 @@ export async function get(req, res, next) {
       res.json(err);
     }
   } else {
-    res.sendStatus(404);
+    res.status(404);
+    res.send({ status: 404 });
   }
 }

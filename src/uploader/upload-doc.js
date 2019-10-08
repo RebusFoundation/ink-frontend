@@ -1,7 +1,6 @@
 import queue from "async-es/queue";
-// import { pdf } from "./pdf.js";
-import { epub } from "./epub/";
 import { writable } from "svelte/store";
+import { fetchWrap } from "../api/fetch-wrap.js";
 const { subscribe, set, update } = writable([]);
 
 const importQueue = queue(upload);
@@ -12,28 +11,17 @@ importQueue.error((err, task) => {
   console.error(err);
   set([]);
 });
-async function create(file) {
-  // file can either be an actual file or an object describing an Article with a type: 'Article'
-  switch (file.type) {
-    // case "application/pdf":
-    //   return pdf(file);
-    case "application/epub+zip":
-      return epub(file);
-    default:
-      return Promise.reject(new Error("Unsupported format"));
-  }
-}
 async function upload(file) {
-  const book = await create(file);
-  if (book) {
+  const job = await uploadFile(file); // Replace with upload function and rename `book` to `job`
+  if (job) {
     update(files => {
       const set = new Set(files);
       set.delete(file);
       return [...set];
     });
-    return book;
+    return job;
   } else {
-    throw new Error("No book created");
+    throw new Error("No job created");
   }
 }
 function add(file) {
@@ -51,3 +39,28 @@ export const uploadQueue = {
   subscribe,
   add
 };
+
+async function uploadFile(file) {
+  const response = await window.fetch("/api/whoami", {
+    credentials: "include"
+  });
+  const { user } = await response.json();
+  const endpoint = `${user.profile.id}/file-upload-pub`;
+  const data = new window.FormData();
+  data.append("file", file);
+  try {
+    const response = await fetchWrap(endpoint, {
+      credentials: "include",
+      method: "POST",
+      body: data,
+      headers: new window.Headers({
+        Authorization: `Bearer ${user.token}`
+      })
+    });
+    return response.json();
+  } catch (err) {
+    console.error("upload error: ", err, err.status, err.response);
+    err.httpMethod = "POST/Upload Media";
+    throw err;
+  }
+}

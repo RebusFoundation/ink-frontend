@@ -31,14 +31,13 @@ export const notes = derived(chapter, ($chapter, set) => {
         .then(response => response.json())
         .then(notesData => set(notesData));
     } else {
-      set({})
+      set({});
     }
   } catch (err) {
     set({});
     console.error(err);
   }
-  
-})
+});
 
 export const navigation = derived([book, chapter], ([$book, $chapter]) => {
   let previous;

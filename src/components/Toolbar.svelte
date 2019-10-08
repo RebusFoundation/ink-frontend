@@ -10,7 +10,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    background-color: white;
+    background-color: var(--main-background-color);
     z-index: 2;
     line-height: 1;
     padding: 0.25rem 0.5rem;

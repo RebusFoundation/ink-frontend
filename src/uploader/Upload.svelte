@@ -69,18 +69,6 @@
   .input {
     text-indent: 3rem;
   }
-  .header-row {
-    display: flex;
-    justify-content: space-between;
-    min-height: 30px;
-  }
-  .header-row p {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    color: var(--medium);
-    margin: 0;
-    margin-top: 0.25rem;
-  }
   @keyframes uploaderButtonPop {
     0% {
       transform: scale(0.8);
@@ -94,11 +82,6 @@
   }
 </style>
 
-<!-- markup (zero or more items) goes here -->
-<div class="header-row">
-
-  <p>Upload file</p>
-</div>
 <file-drop
   class="FileDrop"
   accept=".epub,.pdf,application/epub+zip,application/pdf"

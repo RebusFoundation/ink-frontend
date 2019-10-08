@@ -28,8 +28,8 @@ function parseNavHTML($, url) {
     toc.inLanguage = $("html").attr("xml:lang");
   } else if ($("html").attr("lang")) {
     toc.inLanguage = $("html").attr("lang");
-  } else if ($('nav[epub\\:type="toc"]').attr("xml\\:lang")) {
-    toc.inLanguage = $('nav[epub\\:type="toc"]').attr("xml\\:lang");
+  } else if ($('nav[epub\\:type="toc"]').attr("xml:lang")) {
+    toc.inLanguage = $('nav[epub\\:type="toc"]').attr("xml:lang");
   }
   const heading = $('nav[epub\\:type="toc"] > :first-child');
   const list = $('nav[epub\\:type="toc"] > ol');

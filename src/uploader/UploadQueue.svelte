@@ -5,17 +5,14 @@
 
 <style>
   /* your styles go here */
-  .UploadQueue summary {
+  .UploadQueue h2 {
     transition: box-shadow 0.1s cubic-bezier(0.9, 0.03, 0.69, 0.22),
       transform 0.1s cubic-bezier(0.9, 0.03, 0.69, 0.22);
     text-transform: uppercase;
     border-radius: 2rem;
     font-size: 0.7rem;
     color: var(--medium);
-  }
-  .UploadQueue summary:hover {
-    color: var(--hover);
-    cursor: pointer;
+    padding: 0.25rem 1rem;
   }
   .UploadQueue ol {
     list-style: none;
@@ -24,18 +21,18 @@
   }
 </style>
 
-<details class="UploadQueue">
-  <summary>
+<div class="UploadQueue">
+  <h2>
     {#if $queue.length === 1}
       Uploading {$queue.length} file
     {:else if $queue.length !== 0}
       Uploading {$queue.length} files
     {:else}Upload queue is empty{/if}
-  </summary>
+  </h2>
   <ol>
     {#each $queue as file}
       <!-- content here -->
       <li>{file.name}</li>
     {/each}
   </ol>
-</details>
+</div>

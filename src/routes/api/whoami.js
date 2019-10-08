@@ -1,6 +1,6 @@
 import got from "got";
 export async function get(req, res, next) {
-  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  res.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
   const data = { user: req.user };
   if (req.user) {
     try {

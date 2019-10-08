@@ -1,13 +1,14 @@
 <script>
   import Button from "./Button.svelte";
   import TextButton from "./TextButton.svelte";
-  import { book as item, current } from "../stores/book.js";
-  import { collections } from "../collections/store.js";
   import { collection } from "../api/collection.js";
+  import { stores } from "../stores";
+  const { infoBook, currentInfoBook, collections } = stores();
   export let modal;
+  export let sidebar = false;
   let book = { navigation: { current: {} } };
-  $: if ($item.id && $item.id !== book.id) {
-    updateBook($item.id);
+  $: if ($infoBook.id && $infoBook.id !== book.id) {
+    updateBook($infoBook.id);
   }
   let bookTags = [];
   $: if (book.tags) {
@@ -22,7 +23,7 @@
   let checkboxes = {};
 
   function handleCollection(tag, input) {
-    collection(tag, $item, input.checked);
+    collection(tag, $infoBook, input.checked);
   }
 </script>
 
@@ -145,9 +146,43 @@
       transform: rotate(-45deg);
     }
   }
+  .CollectionBar {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background-color: var(--sidebar-background-color);
+    margin: 0 0 0.5rem;
+  }
+  h2 {
+    text-align: center;
+    font-size: 1rem;
+    margin: 0;
+    color: var(--medium);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+  .Cover {
+    text-align: center;
+  }
+  .Cover img {
+    height: 150px;
+  }
+  .Attributions {
+    padding: 0 1rem;
+  }
+  .InfoAttribution {
+    margin: 0;
+    font-style: italic;
+    color: var(--medium);
+    font-size: 0.85rem;
+  }
 </style>
 
-{#if $current}
+{#if $currentInfoBook}
   <a href="/collections/all" class="return" data-close-modal class:modal>
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -164,69 +199,106 @@
     Library
   </a>
 {/if}
+{#if sidebar}
+  <div class="CollectionBar">
+    <span />
+    <h2>{book.name || ''}</h2>
+    <span />
+  </div>
+  <div class="Cover">
+    <img src={book.cover} alt={book.name} />
+  </div>
+  {#if book.author}
+    <div class="Attributions">
+      {#each book.author as attribution}
+        <p class="InfoAttribution">{attribution.name}</p>
+      {:else}
+        <p class="InfoAttribution">No author</p>
+      {/each}
+      {#each book.editor as attribution}
+        <p class="InfoAttribution">{attribution.name} (editor)</p>
+      {:else}
+        <p class="InfoAttribution">No editor</p>
+      {/each}
+      {#each book.translator as attribution}
+        <p class="InfoAttribution">{attribution.name} (translator)</p>
+      {:else}
+        <p class="InfoAttribution">No translator</p>
+      {/each}
+      {#each book.contributor as attribution}
+        <p class="InfoAttribution">{attribution.name} (contributor)</p>
+      {:else}
+        <p class="InfoAttribution">No contributor</p>
+      {/each}
+      {#each book.illustrator as attribution}
+        <p class="InfoAttribution">{attribution.name} (illustrator)</p>
+      {:else}
+        <p class="InfoAttribution">No illustrator</p>
+      {/each}
+    </div>
+  {/if}
+{/if}
 {#if modal}
-  <h1>{$item.name}</h1>
+  <h1>{$infoBook.name || ''}</h1>
 {/if}
 <ol>
-{#if book.json.epubVersion}
-  <li>
-    <a
-      class:item={true}
-      href={book.navigation.current.path}
-      data-close-modal
-      class:current={$current === 'read'}>
-      {book.position ? 'Continue' : 'Read'}
-    </a>
-  </li>
-  <li>
-    <a
-      href="/assets{new window.URL(book.id + 'original.epub').pathname}">
-      Download original
-    </a>
-  </li>
-  {:else if  book.readingOrder[0] && book.readingOrder[0].url}
-  <li>
-    <a
-      href="/assets{new window.URL(book.readingOrder[0].url).pathname}">
-      Download original
-    </a>
-  </li>
+  {#if book.json.epubVersion}
+    <li>
+      <a
+        class:infoBook={true}
+        href={book.navigation.current.path}
+        data-close-modal
+        class:current={$currentInfoBook === 'read'}>
+        {book.position ? 'Continue' : 'Read'}
+      </a>
+    </li>
+    <li>
+      <a href="/assets{new window.URL(book.id + 'original.epub').pathname}">
+        Download original
+      </a>
+    </li>
+  {:else if book.readingOrder[0] && book.readingOrder[0].url}
+    <li>
+      <a href="/assets{new window.URL(book.readingOrder[0].url).pathname}">
+        Download original
+      </a>
+    </li>
   {:else}
-  <li>
-    <a
-      href="/">
-      Download original
-    </a>
-  </li>
-{/if}
+    <li>
+      <a href="/">&nbsp;</a>
+    </li>
+    <li>
+      <a href="/">Download original</a>
+    </li>
+  {/if}
   <li class="first-item">
     <a
-      href="{$item.url}metadata"
+      href="{$infoBook.url}metadata"
       data-close-modal
-      class:current={$current === 'metadata'}>
+      class:current={$currentInfoBook === 'metadata'}>
       Metadata
     </a>
   </li>
   <li>
     <a
-      href="{$item.url}contents"
+      href="{$infoBook.url}contents"
       data-close-modal
-      class:current={$current === 'contents'}>
+      class:current={$currentInfoBook === 'contents'}>
       Contents
     </a>
   </li>
   <li class="last-item">
     <a
-      href="{$item.url}annotations"
+      href="{$infoBook.url}annotations"
       data-close-modal
-      class:current={$current === 'annotations'}>
+      class:current={$currentInfoBook === 'annotations'}>
       Annotations
     </a>
   </li>
 </ol>
 
 {#if $collections}
-  <h2 class="Collections">Collections</h2>
+  <h2 class="Collections">Manage Collections</h2>
   <ol class="CollectionsList">
     {#each $collections as tag, i}
       <li>

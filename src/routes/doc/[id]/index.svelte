@@ -9,9 +9,10 @@
 </script>
 
 <script>
-  import { book } from "../../../doc/stores.js";
+  import { stores } from "../../../stores";
+  const { docStore } = stores();
   export let bookData;
-  book.set(bookData);
+  docStore.set(bookData);
 </script>
 
 <style>
@@ -19,4 +20,4 @@
 </style>
 
 <!-- markup (zero or more items) goes here -->
-<pre>{$book.name}</pre>
+<h1>{$docStore.name}</h1>

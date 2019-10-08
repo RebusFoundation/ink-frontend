@@ -3,9 +3,9 @@
   import { stores } from "@sapper/app";
   import { create } from "../api/create-profile.js";
   import { profile as profileStore } from "../routes/_profile.js";
-  let profile = {}
+  let profile = {};
   $: if ($profileStore.profile) {
-    profile = $profileStore.profile
+    profile = $profileStore.profile;
   }
 </script>
 
@@ -77,9 +77,13 @@
               on:click={async event => {
                 event.target.disabled = 'true';
                 event.target.setAttribute('working', 'true');
-                const newProfile = await create($profileStore)
-                profileStore.set({ profile: newProfile.profile, user: newProfile.user, loading: false });
-                profile = newProfile.profile
+                const newProfile = await create($profileStore);
+                profileStore.set({
+                  profile: newProfile.profile,
+                  user: newProfile.user,
+                  loading: false
+                });
+                profile = newProfile.profile;
               }}>
               Yes, create an account
             </button>

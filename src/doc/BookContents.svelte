@@ -1,8 +1,9 @@
 <script>
-  import { contents, book } from "./stores.js";
+  import { stores } from "../stores";
   import Contents from "./Contents.svelte";
   import TextButton from "../components/TextButton.svelte";
   import { configuringReader } from "./stores.js";
+  const { contents, docStore } = stores();
   export let modal = false;
 </script>
 
@@ -95,7 +96,7 @@
       {#if $configuringReader}Done{:else}Reader Settings{/if}
     </button>
   </div>
-  {#if $contents.children && $book}
-    <Contents contents={$contents} book={$book} />
+  {#if $contents.children && $docStore}
+    <Contents contents={$contents} book={$docStore} />
   {/if}
 </div>

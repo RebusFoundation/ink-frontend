@@ -1,0 +1,54 @@
+/* IMPORTANT
+ * This snapshot file is auto-generated, but designed for humans.
+ * It should be checked into source control and tracked carefully.
+ * Re-generate by setting TAP_SNAPSHOT=1 and running tests.
+ * Make sure to inspect the output below.  Do not ignore changes!
+ */
+"use strict";
+exports[`test/Button.test.js TAP Button - primary > Button - not primary 1`] = `
+Object {
+  "css": Object {
+    "code": ".Button.svelte-10lphbs,.Button.svelte-10lphbs:link{font-family:var(--sans-fonts);font-size:0.65rem;flex:0 1 auto;line-height:1;display:inline-block;padding:0.45rem 1.5rem 0.5rem;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;text-align:center;white-space:nowrap;text-decoration:none;text-transform:uppercase;font-weight:700;color:var(--dark);border-radius:var(--border-radius);-ms-touch-action:manipulation;touch-action:manipulation;background-color:var(--rc-main);box-shadow:1px 2px 4px 0 rgba(33, 33, 33, 0.1);text-decoration:none !important;border:none}.Button.svelte-10lphbs:hover,.Button.svelte-10lphbs:link:hover,.Button.svelte-10lphbs:link:visited:hover,.Button.svelte-10lphbs:visited:hover,.Button.svelte-10lphbs:link:visited:hover{color:white !important;background-color:var(--rc-dark);box-shadow:none;text-decoration:none}.Button.svelte-10lphbs:active,.Button.svelte-10lphbs:link:active{background-color:var(--active)}.Button.primary.svelte-10lphbs,.Button.primary.svelte-10lphbs:link,.Button.primary.svelte-10lphbs:visited{color:white;font-weight:350;background-color:var(--link);background-image:none}.Button.svelte-10lphbs:focus{border-color:var(--link);outline:none;background-color:var(--link);box-shadow:rgb(255, 255, 255) 0px 0px 0px 1px, 0px 0px 0px 3px var(--link)}.Button.primary.svelte-10lphbs:active{color:white;border-color:var(--active);background-color:var(--active)}.Button.primary.svelte-10lphbs:hover,.Button.primary.svelte-10lphbs:link:hover,.Button.primary.svelte-10lphbs:link:visited:hover{color:white !important;background-color:var(--hover);border-color:var(--hover)}.Button.primary.svelte-10lphbs:active:focus,.Button.primary.svelte-10lphbs:active:hover{box-shadow:rgb(255, 255, 255) 0px 0px 0px 1px,\\n      0px 0px 0px 3px var(--active)}.Button[disabled].svelte-10lphbs,.Button.primary[disabled].svelte-10lphbs,.Button[disabled].svelte-10lphbs:hover,.Button.primary[disabled].svelte-10lphbs:hover{background-color:#eee;background-image:none;border-color:#eee;color:#bbb;cursor:not-allowed}.Button[disabled].svelte-10lphbs:focus,.Button.primary[disabled].svelte-10lphbs:focus{border-color:#999;background-color:var(--disabled);box-shadow:inset 0 0px 2px 0 rgba(0, 66, 98, 0.15);background-image:none}.Button.warning.svelte-10lphbs{background-color:var(--error);color:white}",
+    "map": null,
+  },
+  "head": "",
+  "html": "<button class=\\"Button svelte-10lphbs  warning\\" data-no-close>\\n\\t    Test Button\\n\\t  </button>",
+}
+`;
+
+exports[`test/Button.test.js TAP Button - primary > Button - primary 1`] = `
+Object {
+  "css": Object {
+    "code": ".Button.svelte-10lphbs,.Button.svelte-10lphbs:link{font-family:var(--sans-fonts);font-size:0.65rem;flex:0 1 auto;line-height:1;display:inline-block;padding:0.45rem 1.5rem 0.5rem;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;text-align:center;white-space:nowrap;text-decoration:none;text-transform:uppercase;font-weight:700;color:var(--dark);border-radius:var(--border-radius);-ms-touch-action:manipulation;touch-action:manipulation;background-color:var(--rc-main);box-shadow:1px 2px 4px 0 rgba(33, 33, 33, 0.1);text-decoration:none !important;border:none}.Button.svelte-10lphbs:hover,.Button.svelte-10lphbs:link:hover,.Button.svelte-10lphbs:link:visited:hover,.Button.svelte-10lphbs:visited:hover,.Button.svelte-10lphbs:link:visited:hover{color:white !important;background-color:var(--rc-dark);box-shadow:none;text-decoration:none}.Button.svelte-10lphbs:active,.Button.svelte-10lphbs:link:active{background-color:var(--active)}.Button.primary.svelte-10lphbs,.Button.primary.svelte-10lphbs:link,.Button.primary.svelte-10lphbs:visited{color:white;font-weight:350;background-color:var(--link);background-image:none}.Button.svelte-10lphbs:focus{border-color:var(--link);outline:none;background-color:var(--link);box-shadow:rgb(255, 255, 255) 0px 0px 0px 1px, 0px 0px 0px 3px var(--link)}.Button.primary.svelte-10lphbs:active{color:white;border-color:var(--active);background-color:var(--active)}.Button.primary.svelte-10lphbs:hover,.Button.primary.svelte-10lphbs:link:hover,.Button.primary.svelte-10lphbs:link:visited:hover{color:white !important;background-color:var(--hover);border-color:var(--hover)}.Button.primary.svelte-10lphbs:active:focus,.Button.primary.svelte-10lphbs:active:hover{box-shadow:rgb(255, 255, 255) 0px 0px 0px 1px,\\n      0px 0px 0px 3px var(--active)}.Button[disabled].svelte-10lphbs,.Button.primary[disabled].svelte-10lphbs,.Button[disabled].svelte-10lphbs:hover,.Button.primary[disabled].svelte-10lphbs:hover{background-color:#eee;background-image:none;border-color:#eee;color:#bbb;cursor:not-allowed}.Button[disabled].svelte-10lphbs:focus,.Button.primary[disabled].svelte-10lphbs:focus{border-color:#999;background-color:var(--disabled);box-shadow:inset 0 0px 2px 0 rgba(0, 66, 98, 0.15);background-image:none}.Button.warning.svelte-10lphbs{background-color:var(--error);color:white}",
+    "map": null,
+  },
+  "head": "",
+  "html": "<button class=\\"Button svelte-10lphbs primary\\" data-close-modal>\\n\\t    Test Button\\n\\t  </button>",
+}
+`;
+
+exports[
+  `test/Button.test.js TAP Button - primary > Link Button - not primary 1`
+] = `
+Object {
+  "css": Object {
+    "code": ".Button.svelte-10lphbs,.Button.svelte-10lphbs:link{font-family:var(--sans-fonts);font-size:0.65rem;flex:0 1 auto;line-height:1;display:inline-block;padding:0.45rem 1.5rem 0.5rem;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;text-align:center;white-space:nowrap;text-decoration:none;text-transform:uppercase;font-weight:700;color:var(--dark);border-radius:var(--border-radius);-ms-touch-action:manipulation;touch-action:manipulation;background-color:var(--rc-main);box-shadow:1px 2px 4px 0 rgba(33, 33, 33, 0.1);text-decoration:none !important;border:none}.Button.svelte-10lphbs:hover,.Button.svelte-10lphbs:link:hover,.Button.svelte-10lphbs:link:visited:hover,.Button.svelte-10lphbs:visited:hover,.Button.svelte-10lphbs:link:visited:hover{color:white !important;background-color:var(--rc-dark);box-shadow:none;text-decoration:none}.Button.svelte-10lphbs:active,.Button.svelte-10lphbs:link:active{background-color:var(--active)}.Button.primary.svelte-10lphbs,.Button.primary.svelte-10lphbs:link,.Button.primary.svelte-10lphbs:visited{color:white;font-weight:350;background-color:var(--link);background-image:none}.Button.svelte-10lphbs:focus{border-color:var(--link);outline:none;background-color:var(--link);box-shadow:rgb(255, 255, 255) 0px 0px 0px 1px, 0px 0px 0px 3px var(--link)}.Button.primary.svelte-10lphbs:active{color:white;border-color:var(--active);background-color:var(--active)}.Button.primary.svelte-10lphbs:hover,.Button.primary.svelte-10lphbs:link:hover,.Button.primary.svelte-10lphbs:link:visited:hover{color:white !important;background-color:var(--hover);border-color:var(--hover)}.Button.primary.svelte-10lphbs:active:focus,.Button.primary.svelte-10lphbs:active:hover{box-shadow:rgb(255, 255, 255) 0px 0px 0px 1px,\\n      0px 0px 0px 3px var(--active)}.Button[disabled].svelte-10lphbs,.Button.primary[disabled].svelte-10lphbs,.Button[disabled].svelte-10lphbs:hover,.Button.primary[disabled].svelte-10lphbs:hover{background-color:#eee;background-image:none;border-color:#eee;color:#bbb;cursor:not-allowed}.Button[disabled].svelte-10lphbs:focus,.Button.primary[disabled].svelte-10lphbs:focus{border-color:#999;background-color:var(--disabled);box-shadow:inset 0 0px 2px 0 rgba(0, 66, 98, 0.15);background-image:none}.Button.warning.svelte-10lphbs{background-color:var(--error);color:white}",
+    "map": null,
+  },
+  "head": "",
+  "html": "<a class=\\"Button svelte-10lphbs  warning\\" href=\\"https://example.com\\" data-no-close>\\n\\t    Test Button\\n\\t  </a>",
+}
+`;
+
+exports[
+  `test/Button.test.js TAP Button - primary > Link Button - primary 1`
+] = `
+Object {
+  "css": Object {
+    "code": ".Button.svelte-10lphbs,.Button.svelte-10lphbs:link{font-family:var(--sans-fonts);font-size:0.65rem;flex:0 1 auto;line-height:1;display:inline-block;padding:0.45rem 1.5rem 0.5rem;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;text-align:center;white-space:nowrap;text-decoration:none;text-transform:uppercase;font-weight:700;color:var(--dark);border-radius:var(--border-radius);-ms-touch-action:manipulation;touch-action:manipulation;background-color:var(--rc-main);box-shadow:1px 2px 4px 0 rgba(33, 33, 33, 0.1);text-decoration:none !important;border:none}.Button.svelte-10lphbs:hover,.Button.svelte-10lphbs:link:hover,.Button.svelte-10lphbs:link:visited:hover,.Button.svelte-10lphbs:visited:hover,.Button.svelte-10lphbs:link:visited:hover{color:white !important;background-color:var(--rc-dark);box-shadow:none;text-decoration:none}.Button.svelte-10lphbs:active,.Button.svelte-10lphbs:link:active{background-color:var(--active)}.Button.primary.svelte-10lphbs,.Button.primary.svelte-10lphbs:link,.Button.primary.svelte-10lphbs:visited{color:white;font-weight:350;background-color:var(--link);background-image:none}.Button.svelte-10lphbs:focus{border-color:var(--link);outline:none;background-color:var(--link);box-shadow:rgb(255, 255, 255) 0px 0px 0px 1px, 0px 0px 0px 3px var(--link)}.Button.primary.svelte-10lphbs:active{color:white;border-color:var(--active);background-color:var(--active)}.Button.primary.svelte-10lphbs:hover,.Button.primary.svelte-10lphbs:link:hover,.Button.primary.svelte-10lphbs:link:visited:hover{color:white !important;background-color:var(--hover);border-color:var(--hover)}.Button.primary.svelte-10lphbs:active:focus,.Button.primary.svelte-10lphbs:active:hover{box-shadow:rgb(255, 255, 255) 0px 0px 0px 1px,\\n      0px 0px 0px 3px var(--active)}.Button[disabled].svelte-10lphbs,.Button.primary[disabled].svelte-10lphbs,.Button[disabled].svelte-10lphbs:hover,.Button.primary[disabled].svelte-10lphbs:hover{background-color:#eee;background-image:none;border-color:#eee;color:#bbb;cursor:not-allowed}.Button[disabled].svelte-10lphbs:focus,.Button.primary[disabled].svelte-10lphbs:focus{border-color:#999;background-color:var(--disabled);box-shadow:inset 0 0px 2px 0 rgba(0, 66, 98, 0.15);background-image:none}.Button.warning.svelte-10lphbs{background-color:var(--error);color:white}",
+    "map": null,
+  },
+  "head": "",
+  "html": "<a class=\\"Button svelte-10lphbs primary\\" href=\\"https://example.com\\" data-close-modal>\\n\\t    Test Button\\n\\t  </a>",
+}
+`;

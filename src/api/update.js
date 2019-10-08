@@ -7,7 +7,7 @@ export async function update(payload) {
   });
   const { profile } = await response.json();
   try {
-    payload.json = payload.json || {}
+    payload.json = payload.json || {};
     const csrfToken = getToken();
     const response = await fetchWrap("/api/create", {
       method: "POST",

@@ -1,18 +1,19 @@
 <script>
   import { onMount, onDestroy, createEventDispatcher } from "svelte";
-  import {
-    book,
-    chapter,
+  import { stores } from "../stores";
+  import { fade } from "svelte/transition";
+  import ChapterBody from "./ChapterBody.svelte";
+  const {
+    docStore,
+    chapterStore,
     navigation,
     contents,
     currentLocation,
     theme,
     fontSize
-  } from "./stores.js";
-  import { fade } from "svelte/transition";
-  import ChapterBody from "./ChapterBody.svelte";
+  } = stores();
   const dispatch = createEventDispatcher();
-  let { url, index } = $chapter;
+  let { url, index } = $chapterStore;
   let positionObserver;
   let locationObserver;
   let highest;
@@ -290,9 +291,9 @@
   }
 </style>
 
-{#if $book && $chapter && $chapter.index === chapterIndex}
+{#if $docStore && $chapterStore && $chapterStore.index === chapterIndex}
   <div class="Chapter" bind:this={chapterElement} on:introend={handleIntroEnd}>
-    <ChapterBody html={$chapter.html} />
+    <ChapterBody html={$chapterStore.html} />
     <div class="ChapterNotes" />
   </div>
 {/if}

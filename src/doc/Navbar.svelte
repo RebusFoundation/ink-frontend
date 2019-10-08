@@ -1,9 +1,9 @@
 <script>
   // your script goes here
-  import {prefetch} from '@sapper/app'
+  import { prefetch } from "@sapper/app";
   export let navigation = {};
   $: if (navigation.next) {
-    prefetch(`/doc${new window.URL(navigation.next.url).pathname}`)
+    prefetch(`/doc${new window.URL(navigation.next.url).pathname}`);
   }
 </script>
 

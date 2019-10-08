@@ -19,6 +19,19 @@
 		<dc:creator id="clippinger">Erle Elsworth Clippinger</dc:creator>
 		<meta property="file-as" refines="#clippinger">Clippinger, Erle Elsworth</meta>
 
+		
+		<dc:creator id="editor">Fake Editor</dc:creator>
+		<meta property="role" refines="#editor">edt</meta>
+		<dc:creator id="trl">Fake Translator</dc:creator>
+		<meta property="role" refines="#trl">trl</meta>
+		<dc:creator id="ill">Fake Illustrator</dc:creator>
+		<meta property="role" refines="#ill">ill</meta>
+		<dc:creator id="clr">Fake Colourist</dc:creator>
+		<meta property="role" refines="#clr">clr</meta>
+
+		<dc:contributor id="contributor">Fake Colourist</dc:contributor>
+		<meta property="role" refines="#contributor">act</meta>
+
 		<dc:language>en</dc:language>
 
 		<dc:date>2008-05-20</dc:date>

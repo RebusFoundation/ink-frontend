@@ -6,18 +6,12 @@
 
 <style>
   /* your styles go here */
-  .Recent summary {
-    transition: box-shadow 0.1s cubic-bezier(0.9, 0.03, 0.69, 0.22),
-      transform 0.1s cubic-bezier(0.9, 0.03, 0.69, 0.22);
+  .Recent h1 {
     text-transform: uppercase;
     border-radius: 2rem;
-    font-size: 0.7rem;
+    font-size: 1rem;
     color: var(--medium);
     margin-bottom: 1.75rem;
-  }
-  .Recent summary:hover {
-    color: var(--hover);
-    cursor: pointer;
   }
   .Recent {
     position: relative;
@@ -29,8 +23,8 @@
   }
 </style>
 
-<details class="Recent" open>
-  <summary>Recently Imported</summary>
+<div class="Recent">
+  <h1>Recently Imported</h1>
   <Button href="/collections/all">See All</Button>
   <List list={recent.items} />
-</details>
+</div>

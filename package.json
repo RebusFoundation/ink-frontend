@@ -16,7 +16,9 @@
     "cy:open": "cypress open",
     "check-format": "prettier --check '**/*.{js,json,css}'",
     "lint": "healthier",
-    "test": "run-p --race dev cy:run lint check-format",
+    "test": "run-p --race dev cy:run lint check-format tap",
+    "tap": "API_SERVER=https://localhost:4430/ tap --node-arg=-r --node-arg=svelte/register ",
+    "snapshots": "API_SERVER=https://localhost:4430/ tap --node-arg=-r --node-arg=svelte/register --snapshot",
     "format": "prettier --write  --plugin-search-dir=. '**/*.{js,json,css,yml,svelte}'",
     "storybook": "start-storybook -p 6006 --https --ssl-cert=dev/localhost.cert --ssl-key=dev/localhost.key -s ./",
     "build-storybook": "build-storybook"
@@ -53,7 +55,7 @@
     "express-session": "^1.16.2",
     "file-drop-element": "^0.2.0",
     "firebase-admin": "^8.6.0",
-    "firebase-tools": "^6.8.0",
+    "firebase-tools": "^6.12.0",
     "got": "^9.6.0",
     "idb-keyval": "^3.2.0",
     "inert-polyfill": "^0.2.5",
@@ -72,7 +74,9 @@
     "popper.js": "^1.15.0",
     "quick-lru": "^4.0.1",
     "quill": "^1.3.7",
+    "sharp": "^0.23.1",
     "sirv": "^0.4.0",
+    "universal-base64url": "^1.1.0",
     "xmlserializer": "^0.6.1"
   },
   "devDependencies": {
@@ -103,6 +107,7 @@
     "sapper": "^0.27.0",
     "standard": "^13.1.0",
     "svelte": "^3.8.1",
-    "svelte-loader": "^2.13.6"
+    "svelte-loader": "^2.13.6",
+    "tap": "^14.6.9"
   }
 }

@@ -1,4 +1,5 @@
 import { fetchWrap } from "./fetch-wrap.js";
+import { getToken } from "./get-cookie.js";
 
 export async function create(session) {
   const newReader = {
@@ -6,12 +7,13 @@ export async function create(session) {
     summary: `Reader profile`
   };
   try {
-    await fetchWrap(session.profile.create, {
+    const csrfToken = getToken();
+    await fetchWrap("/api/create-profile", {
       method: "POST",
       body: JSON.stringify(newReader),
       headers: new window.Headers({
-        Authorization: `Bearer ${session.user.token}`,
-        "content-type": "application/ld+json"
+        "content-type": "application/json",
+        "csrf-token": csrfToken
       })
     });
     const reader = await window.fetch("/api/whoami", {

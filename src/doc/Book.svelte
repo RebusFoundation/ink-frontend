@@ -2,16 +2,17 @@
   import Navbar from "./Navbar.svelte";
   import Chapter from "./Chapter.svelte";
   import ContentsButton from "./ContentsButton.svelte";
-  import {
-    book as bookStore,
-    chapter as chapterStore,
+  import { stores } from "../stores";
+  const {
+    docStore,
+    chapterStore,
     navigation,
     contents,
     currentLocation,
     theme,
     fontSize,
     chapterTitle
-  } from "./stores.js";
+  } = stores();
   function handleCurrent({ detail }) {
     currentLocation.set({
       location: detail.highest.dataset.location
@@ -28,7 +29,7 @@
   export let book;
   export let chapter;
   if (book) {
-    bookStore.set(book);
+    docStore.set(book);
   }
   if (chapter) {
     chapterStore.set(chapter);

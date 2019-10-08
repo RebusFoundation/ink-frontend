@@ -2,6 +2,7 @@ import got from "got";
 import createDOMPurify from "dompurify/dist/purify.es.js";
 import { JSDOM } from "jsdom";
 import * as xml from "xmlserializer";
+import sharp from "sharp";
 
 const purifyConfig = {
   KEEP_CONTENT: false,
@@ -13,7 +14,7 @@ const purifyConfig = {
 
 export async function get(req, res, next) {
   const { path } = req.params;
-  const url = new URL(path.join("/"), process.env.API_SERVER).href
+  const url = new URL(path.join("/"), process.env.API_SERVER).href;
   res.set("Cache-Control", "max-age=31536000, immutable");
   if (req.user) {
     try {
@@ -27,7 +28,7 @@ export async function get(req, res, next) {
       if (redirect.headers.location && redirect.statusCode === 302) {
         response = await got.head(redirect.headers.location);
       }
-      if (response.headers["content-type"].includes("svg")) {
+      if (response.headers["content-type"] === "image/svg+xml") {
         const mainresponse = await got(url);
         const dom = new JSDOM(mainresponse.body, {
           contentType: response.headers["content-type"]
@@ -42,17 +43,66 @@ export async function get(req, res, next) {
         res.type("svg");
         res.send(result);
       } else if (
-        response.headers["content-type"].includes("image") ||
-        response.headers["content-type"].includes("video") ||
-        response.headers["content-type"].includes("application/epub+zip") ||
-        response.headers["content-type"].includes("application/pdf")
+        response.headers["content-type"].includes("image") &&
+        req.query.cover &&
+        response.statusCode !== 404
       ) {
-        return got.stream(redirect.headers.location).pipe(res);
+        const resizer = sharp()
+          .resize(300, 300, { fit: "inside" })
+          .jpeg({ quality: 70 });
+        resizer.on("error", err => {
+          console.error(err);
+          res.sendStatus(404);
+        });
+        return got
+          .stream(redirect.headers.location)
+          .on("error", err => console.error(err))
+          .pipe(resizer)
+          .pipe(res);
+      } else if (
+        req.query.cover &&
+        (response.statusCode === 404 || !response)
+      ) {
+        res.redirect("/placeholder-cover.jpg");
+      } else if (testMediaTypes(response.headers["content-type"])) {
+        return got
+          .stream(redirect.headers.location)
+          .on("error", err => console.error(err))
+          .pipe(res);
       } else {
         return res.sendStatus(404);
       }
     } catch (err) {
-      return res.sendStatus(404);
+      if (req.query.cover) {
+        res.redirect("/placeholder-cover.jpg");
+      } else {
+        return res.sendStatus(404);
+      }
     }
+  }
+}
+
+const validTypes = [
+  "application/x-font-ttf",
+  "font/woff2",
+  "font/woff",
+  "font/ttf",
+  "font/sfnt",
+  "font/otf",
+  "image/gif",
+  "image/jpeg",
+  "image/png",
+  "application/font-sfnt",
+  "application/font-woff",
+  "audio/mpeg",
+  "audio/mp4",
+  "video/H264",
+  "video/H265",
+  "video/mp4"
+];
+
+function testMediaTypes(contentType) {
+  if (validTypes.includes(contentType)) {
+    return true;
   }
 }
