@@ -1,0 +1,269 @@
+
+  .Chapter > * {
+    grid-column: 2 / 3;
+    margin: 0 auto;
+    max-width: 100%;
+  }
+  .Bookmarked {
+    position: relative;
+  }
+  .Bookmarked::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    margin-left: -50vw;
+    display: block;
+    top: 0;
+    height: 2.5rem;
+    border-left: 0.75rem solid #b4312e;
+    border-bottom: 0.75rem solid transparent;
+  }
+  /* .Highlight.Commented::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    margin-left: -50vw;
+    display: block;
+    top: 0;
+    height: 1.25rem;
+    border-left: 1.25rem solid #b4312e;
+  } */
+
+  .Chapter .Highlight {
+    background-color: #ffff98;
+  }
+
+  .Chapter .Highlight--selected {
+    background-color: #ddddd0;
+  }
+
+  .Chapter [hidden],
+  .Chapter template {
+    display: none !important;
+  }
+  .Chapter head {
+    display: none;
+  }
+
+  .Chapter blockquote {
+    padding-left: 2.5em;
+    margin-left: 0;
+  }
+
+  .Chapter blockquote,
+  .Chapter blockquote p {
+    font-size: 0.75rem;
+    font-size: calc(var(--reader-font-size) * 0.85);
+    line-height: 1.45;
+  }
+
+  .Chapter blockquote * + * {
+    margin-top: calc(var(--reader-paragraph-spacing) * 0.85);
+  }
+  .Chapter blockquote * {
+    margin-bottom: 0;
+  }
+  .Chapter blockquote :first-child {
+    margin: 0;
+  }
+  .Chapter h1 {
+    font-size: 2em;
+    font-size: calc(var(--reader-font-size) * 3);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .Chapter h2 {
+    font-weight: 600;
+    font-size: calc(var(--reader-font-size) * 2);
+    margin: 0;
+  }
+  .Chapter h3 {
+    font-weight: 400;
+    font-style: italic;
+    font-size: calc(var(--reader-font-size) * 1.5);
+    margin: 0;
+  }
+  .Chapter h4 {
+    font-weight: normal;
+    font-size: calc(var(--reader-font-size) * 1.25);
+    margin: 0;
+  }
+  .Chapter h5 {
+    font-weight: normal;
+    font-size: var(--reader-font-size);
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .Chapter h6 {
+    font-weight: normal;
+    font-size: var(--reader-font-size);
+    margin: 0;
+  }
+
+  .Chapter h1,
+  .Chapter h2,
+  .Chapter h3,
+  .Chapter h4,
+  .Chapter h5,
+  .Chapter h6 {
+    margin: 0;
+  }
+
+  .Chapter p,
+  .Chapter td,
+  .Chapter figure,
+  .Chapter figcaption {
+    line-height: var(--reader-line-height);
+    font-size: 0.85rem;
+    font-size: var(--reader-font-size, 0.85rem);
+  }
+
+  .Chapter a[href] {
+    transition: box-shadow 0.1s cubic-bezier(0.9, 0.03, 0.69, 0.22),
+      transform 0.1s cubic-bezier(0.9, 0.03, 0.69, 0.22);
+    text-decoration: underline;
+  }
+  .Chapter :link {
+    color: var(--link);
+  }
+  .Chapter :visited {
+    color: var(--visited);
+  }
+  .Chapter a:link:hover {
+    color: var(--hover);
+  }
+  .Chapter a {
+    border-radius: 0;
+  }
+  @keyframes readableChapterPop {
+    0% {
+      box-shadow: 0 0 0 1px rgb(228, 255, 254, 0.2);
+      background-color: rgb(228, 255, 254, 0.2);
+      transform: scale(0.5);
+    }
+    50% {
+      box-shadow: 0 0 0 8px var(--rc-lighter);
+      transform: scale(1.5);
+    }
+    100% {
+      box-shadow: 0 0 0 3px var(--rc-lighter);
+      background-color: var(--rc-lighter);
+      transform: scale(1);
+    }
+  }
+  .Highlight.Commented {
+    position: relative;
+    border-bottom: 0.125rem solid #eded00;
+  }
+  .Chapter a.Highlight, .Chapter mark.Highlight {
+    background-color: #feff9c;
+    color: var(--reader-text-color);
+    text-decoration: none;
+    border-radius: 0;
+    position: relative;
+  }
+  .Chapter mark.Highlight[data-highlight-level="1"] {
+    background-color: #7afcff;
+  }
+  .Chapter mark.Highlight[data-highlight-level="2"] {
+    background-color: #ff65a3;
+  }
+  .Chapter mark.Highlight[data-highlight-level="3"] {
+    background-color: #fff740;
+  }
+  .Chapter a.Highlight:hover {
+    background-color: var(--rc-lighter);
+    box-shadow: 0 0 0 3px var(--rc-lighter);
+    color: var(--reader-text-color);
+    text-decoration: none;
+    border-radius: 0;
+    cursor: pointer;
+  }
+  /* .Chapter mark.Highlight[data-highlight-level="1"]:hover {
+    background-color: var(--rc-light);
+    box-shadow: 0 0 0 3px var(--rc-light);
+  }
+  .Chapter mark.Highlight[data-highlight-level="2"]:hover {
+    background-color: #ff7eb9;
+    box-shadow: 0 0 0 3px #ff7eb9;
+  }
+  .Chapter mark.Highlight[data-highlight-level="3"]:hover {
+    background-color: #feff9c;
+    box-shadow: 0 0 0 3px #feff9c;
+  } */
+  .Highlight-anchor {
+    clip-path: inset(100%);
+    clip: rect(1px, 1px, 1px, 1px);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+    top: -40px;
+    left: 0;
+  }
+  .Chapter .Highlight-return-link {
+    line-height: 16px;
+    height: 20px;
+    width: 20px;
+    border-radius: 20px;
+    padding-top: 2px;
+    display: inline-block;
+    padding: 2px 0 0 0;
+    margin: 0;
+    vertical-align: middle;
+    text-align: center;
+    background-color: #f7f7f7;
+  }
+  .Chapter mark::before, 
+  .Chapter mark::after, .Chapter a.Highlight::before, 
+  .Chapter a.Highlight::after {
+    clip-path: inset(100%);
+    clip: rect(1px, 1px, 1px, 1px);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  .Chapter mark::before, .Chapter a.Highlight::before {
+    content: " [highlight start] ";
+  }
+
+  .Chapter mark::after, .Chapter a.Highlight::after {
+    content: " [highlight end] ";
+  }
+  .Chapter a:focus {
+    background-color: var(--rc-lighter);
+    box-shadow: 0 0 0 5px var(--rc-lighter);
+    outline: solid transparent;
+    animation: readableChapterPop 0.25s ease-in-out;
+  }
+
+  .Chapter a:link:active {
+    color: var(--active);
+  }
+  .Chapter b,
+  .Chapter strong,
+  .Chapter b > *,
+  .Chapter strong > * {
+    font-weight: 600;
+  }
+  .Chapter svg,
+  .Chapter img {
+    max-height: 88vh;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+  }
+  .Chapter .is-current {
+    background-color: #f9f9f9;
+    box-shadow: 0 0 0 0.25rem #f9f9f9;
+  }
+  p, ol, ul, dl, blockquote, figure, table, hr, section, article, details, figcaption {
+    margin-top: var(--reader-paragraph-spacing);
+    margin-bottom: var(--reader-paragraph-spacing);
+  }

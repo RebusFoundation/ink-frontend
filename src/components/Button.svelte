@@ -8,6 +8,7 @@
   export let noClose = null;
   export let close = null;
   export let warning = false;
+  export let collection = false;
 </script>
 
 <style>
@@ -152,6 +153,11 @@ StyleGuide 6.Button
     background-color: var(--error);
     color: white;
   }
+  .Button.collection {
+    box-shadow: 0 0 0 1px #ddd, 1px 2px 2px 0 rgba(133, 133, 133, 0.1);
+    background-color: #f0f0f0;
+    border-radius: 16px;
+  }
 </style>
 
 {#if href}
@@ -159,6 +165,7 @@ StyleGuide 6.Button
     class="Button"
     class:primary
     class:warning
+    class:collection
     {hidden}
     {disabled}
     {href}
@@ -172,6 +179,7 @@ StyleGuide 6.Button
     class="Button"
     class:primary
     class:warning
+    class:collection
     {hidden}
     {disabled}
     on:click={click}

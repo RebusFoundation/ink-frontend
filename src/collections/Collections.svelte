@@ -38,6 +38,7 @@
   // });
   function submitForm(event) {
     event.preventDefault();
+    creating = false;
     const tag = {
       type: "reader:Tag",
       tagType: "reader:Stack",
@@ -45,7 +46,6 @@
     };
     create(tag).then(() => {
       name = "";
-      creating = false;
       collections.update(list => [tag, ...list]);
       return update();
     });

@@ -69,6 +69,8 @@ export async function get(req, res, next) {
           .stream(redirect.headers.location)
           .on("error", err => console.error(err))
           .pipe(res);
+      } else if (req.query.cover) {
+        res.redirect("/placeholder-cover.jpg");
       } else {
         return res.sendStatus(404);
       }

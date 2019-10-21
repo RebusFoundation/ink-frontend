@@ -13,6 +13,7 @@ const purifyConfig = {
   FORBID_ATTR: ["srcset", "action", "background", "poster"]
 };
 const tagLocations = [
+  "div",
   "p",
   "h1",
   "h2",
@@ -40,10 +41,7 @@ export async function chapterToJSON(
   index
 ) {
   let locations = 0;
-  let h1 = 0;
-  let h2 = 0;
   const resourceURL = new URL(chapterPath);
-  const order = parseInt(index, 10) + 1;
   let dom;
   try {
     dom = new JSDOM(chapter, {
@@ -118,14 +116,11 @@ export async function chapterToJSON(
       addCSSRules(output, node.sheet.cssRules);
       node.textContent = output.join("\n");
     } else if (tagLocations.indexOf(data.tagName) !== -1) {
-      if (data.tagName === "h1") {
-        h1 = h1 + 1;
-        locations = 0;
-      } else if (data.tagName === "h2") {
-        h2 = h2 + 1;
-        locations = 0;
+      if (data.tagName === "div" && !node.querySelector(tagLocations.join(','))) {
+        node.dataset.location = locations++;
+      } else if (!node.closest('[data-location]') && data.tagName !== "div") {
+        node.dataset.location = locations++;
       }
-      node.dataset.location = `${order}.${h1}.${h2}.${locations++}`;
     }
     if (
       node.getAttributeNS &&

@@ -31,9 +31,9 @@
     transform: translateX(-100%);
   }
   .Modal:not([hidden]) [role="document"] {
-    background-color: rgba(255, 255, 255, 0.95);
-    -webkit-backdrop-filter: blur(7px) saturate(50%);
-    backdrop-filter: blur(7px) saturate(50%);
+    background-color: rgba(255, 255, 255, 0.99);
+    -webkit-backdrop-filter: blur(10px) saturate(50%);
+    backdrop-filter: blur(10px) saturate(50%);
     width: 100vw;
     height: 100vh;
     box-sizing: border-box;
@@ -87,6 +87,7 @@
     margin: 0;
     padding: 0;
     border-radius: 9999px;
+    z-index: 1;
   }
   .Closer:focus {
     outline: solid transparent;
@@ -95,7 +96,7 @@
   }
 </style>
 
-<div class="Modal" use:setup {id} hidden>
+<div class="Modal" use:setup {id} hidden data-no-highlight>
   {#if $modal && $modal.id === id}
     <div role="document" transition:fade={{ duration: 100 }}>
       <button
@@ -103,12 +104,13 @@
         data-close-modal
         class="Closer"
         on:click={event => {
-          const search = new window.URLSearchParams(window.location.search)
-          search.delete(id.replace('-modal', ''))
-          const url = new window.URL(window.location)
-          url.search = search.toString()
-          return goto(url)
-        }} aria-label="Close">
+          const search = new window.URLSearchParams(window.location.search);
+          search.delete(id.replace('-modal', ''));
+          const url = new window.URL(window.location);
+          url.search = search.toString();
+          return goto(url);
+        }}
+        aria-label="Close">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -123,7 +125,7 @@
           <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
       </button>
-      <slot></slot>
+      <slot />
     </div>
   {/if}
 </div>

@@ -27,6 +27,12 @@ export async function get(req, res, next) {
         if (type === "library") {
           url = `${req.user.profile.id}/library?${querystring.encode(query)}`;
         } else if (type === "notes") {
+          if (orderBy === "datePublished") {
+            query.orderBy = "published";
+          }
+          if (reverse !== "false") {
+            query.reverse = reverse;
+          }
           url = `${req.user.profile.id}/notes?${querystring.encode(query)}`;
         }
       } else {
@@ -41,7 +47,17 @@ export async function get(req, res, next) {
         if (reverse !== "false") {
           query.reverse = reverse;
         }
-        url = `${req.user.profile.id}/library?${querystring.encode(query)}`;
+        if (type === "library") {
+          url = `${req.user.profile.id}/library?${querystring.encode(query)}`;
+        } else if (type === "notes") {
+          if (orderBy === "datePublished") {
+            query.orderBy = "published";
+          }
+          if (reverse !== "false") {
+            query.reverse = reverse;
+          }
+          url = `${req.user.profile.id}/notes?${querystring.encode(query)}`;
+        }
       }
       const response = await got(url, {
         headers: {

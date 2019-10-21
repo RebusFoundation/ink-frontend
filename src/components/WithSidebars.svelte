@@ -24,7 +24,7 @@
   @media (min-width: 1024px) {
     .Main.sidebar {
       display: grid;
-      grid-template-columns: 1fr minmax(min-content, 400px);
+      grid-template-columns: 1fr minmax(min-content, 1fr);
       grid-template-areas:
         "body right-sidebar"
         "body right-sidebar";
@@ -45,10 +45,10 @@
       background-color: var(--sidebar-background-color);
     }
   }
-  @media (min-width: 1200px) {
+  @media (min-width: 1281px) {
     .Main.right-sidebar {
       display: grid;
-      grid-template-columns: min-content 1fr minmax(min-content, 400px);
+      grid-template-columns: minmax(min-content, 0.5fr) 1fr minmax(min-content, 0.75fr);
       grid-template-areas:
         "sidebar body right-sidebar"
         "sidebar body right-sidebar";
@@ -68,6 +68,9 @@
       -webkit-overflow-scrolling: touch;
     }
   }
+  :global(.reader) .RightSidebar {
+    background-color: var(--reader-sidebar-background);
+  }
 </style>
 
 <svelte:window bind:innerWidth={width} />
@@ -85,9 +88,9 @@
   {/if}
   <div class="center">
 
-    <Toolbar>
+    <Toolbar scrollTop={true}>
       <span slot="left-button">
-        {#if width <= 1200}
+        {#if width <= 1281}
           <a use:open={{ id: leftModal }} href="/" class="Toolbar-link">
             <svg
               xmlns="http://www.w3.org/2000/svg"

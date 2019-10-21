@@ -10,28 +10,29 @@
     FORBID_TAGS: ["style", "link"],
     FORBID_ATTR: ["style"]
   };
+  const commentConfig = {
+    KEEP_CONTENT: false,
+    ALLOWED_TAGS: ["p", "i", "em", "strong", "a", "b", "ul", "li", "ol", "blockquote", "img", "pre", "code"],
+    FORBID_ATTR: ["style"]
+  };
   export let note;
-  let blockquote;
-  let highlight;
-  let dom;
   let innerHTML = "";
   $: if (note && !note.loading) {
-    dom = DOMPurify.sanitize(note.content, purifyConfig);
-    blockquote = dom.querySelector("blockquote");
-    if (blockquote) {
-      highlight = blockquote.outerHTML;
-      dom.removeChild(blockquote);
+    if (note.json.comment) {
+      innerHTML = DOMPurify.sanitize(note.json.comment, purifyConfig);
     }
-    innerHTML = dom.innerHTML;
   }
   function saver(id, content) {
-    const payload = { ...note, content };
+    const json = { ...note.json, comment: content };
+    const payload = { ...note, json };
+    document.querySelectorAll(`[data-note-id="${id}"]`).forEach(node => {
+      node.classList.add("Commented");
+    });
     update(payload);
   }
 
   function content() {
-    return `${highlight}${container.querySelector(".ql-editor").innerHTML}
-    `;
+    return container.querySelector(".ql-editor").innerHTML;
   }
   let container;
   let quill;
@@ -45,7 +46,7 @@
       quill = new Quill(container, {
         modules: {
           toolbar: [
-            ["bold", "italic", "underline"],
+            ["bold", "italic"],
             ["image", "code-block"],
             ["link", "blockquote"],
             [{ list: "ordered" }, { list: "bullet" }],

@@ -4,7 +4,7 @@
  * Re-generate by setting TAP_SNAPSHOT=1 and running tests.
  * Make sure to inspect the output below.  Do not ignore changes!
  */
-"use strict";
+'use strict'
 exports[`test/chapter-to-json.test.js TAP chapterToJSON > chapterToJSON 1`] = `
 Object {
   "heading": undefined,
@@ -15,7 +15,7 @@ Object {
     "https://example.com/dev-static/demo-epub/pg55456-images/OEBPS/pgepub.css",
   ],
 }
-`;
+`
 
 exports[`test/chapter-to-json.test.js TAP chapterToJSON > chapterToJSON 2`] = `
 Object {
@@ -27,7 +27,7 @@ Object {
     "https://example.com/dev-static/demo-epub/pg55456-images/OEBPS/pgepub.css",
   ],
 }
-`;
+`
 
 exports[`test/chapter-to-json.test.js TAP chapterToJSON > chapterToJSON 3`] = `
 Object {
@@ -35,4 +35,4 @@ Object {
   "html": "Yo!<br>Yo!",
   "stylesheets": Array [],
 }
-`;
+`

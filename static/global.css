@@ -44,6 +44,7 @@ body {
   font-size: 14px;
   line-height: 1.5;
   color: #333;
+  background-color: var(--main-background-color);
 }
 #sapper {
   font-family: var(--sans-fonts);
@@ -498,3 +499,7 @@ a:link:active {
   background-color: var(--light);
   color: black;
 } */
+*[contenteditable]:empty:before
+{
+    content: "\feff"; /* ZERO WIDTH NO-BREAK SPACE */
+}

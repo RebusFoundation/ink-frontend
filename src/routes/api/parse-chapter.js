@@ -22,7 +22,7 @@ export async function get(req, res, next) {
         });
         body = await response.body;
         // await fs.promises.writeFile(
-        //   "s04.xhtml",
+        //   "test.xhtml",
         //   body
         // );
         contentType = response.headers["content-type"];

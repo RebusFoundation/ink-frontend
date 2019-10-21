@@ -2,6 +2,7 @@
   // your script goes here
   import { onMount } from "svelte";
   export let upload = files => console.log(files);
+  let form
   onMount(() => {
     if (!document.getElementById("import-pdf-cover-page")) {
       const canvas = document.createElement("canvas");
@@ -89,13 +90,16 @@
   on:filedrop={event => upload(event.files)}>
   <p>Drop file here</p>
   <p>or</p>
-  <p class="input">
+  <form class="input" bind:this={form}>
     <input
       type="file"
       name="file-selector"
       id="file-selector"
       accept=".epub,.pdf,application/epub+zip,application/pdf"
       multiple
-      on:change={event => upload(event.target.files)} />
-  </p>
+      on:change={event => {
+        upload(event.target.files);
+        form.reset();
+      }} />
+  </form>
 </file-drop>

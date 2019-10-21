@@ -23,6 +23,7 @@
     justify-content: space-between;
     align-items: center;
     height: 32px;
+    grid-area: navbar;
   }
   .Navbar-link {
     font-size: 1.25rem;

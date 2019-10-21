@@ -40,7 +40,7 @@ export async function collection(tag, book, checked) {
   }
   try {
     const csrfToken = getToken();
-    const response = await fetchWrap("/api/create", {
+    const response = await fetchWrap("/api/add", {
       method: "POST",
       body: JSON.stringify(payload),
       headers: new window.Headers({

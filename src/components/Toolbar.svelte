@@ -1,5 +1,7 @@
 <script>
-
+  export let scrollTop = false;
+  export let transparent = false;
+  export let notes = false;
 </script>
 
 <style>
@@ -69,10 +71,20 @@
     vertical-align: middle;
     font-size: 0.65rem;
   }
+  .Toolbar.transparent {
+    background-color: transparent;
+  }
+  .Toolbar.notes {
+    background-color: var(--reader-sidebar-background);
+  }
 </style>
 
 <!-- markup (zero or more items) goes here -->
-<nav class="Toolbar">
+<nav class="Toolbar" class:transparent class:notes on:click={() => {
+  if (scrollTop) {
+    window.scrollTo({left: 0, top: 0, behavior: "smooth"});
+  }
+}}>
   <slot name="left-button">
     <a href="/" class="Toolbar-link">
       <svg

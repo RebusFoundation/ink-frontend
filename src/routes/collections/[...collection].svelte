@@ -2,11 +2,7 @@
   import { decode, encode } from "universal-base64url";
   export async function preload(page, session) {
     try {
-      const [
-        collection,
-        type = "library",
-        sidebarEncoded
-      ] = page.params.collection;
+      const [collection, type = "library"] = page.params.collection;
       const {
         orderBy = "datePublished",
         reverse = "false",
@@ -28,10 +24,8 @@
         hideLoadMore = true;
       }
       let sidebar;
-      if (sidebarEncoded) {
-        sidebar = decode(sidebarEncoded);
-      } else {
-        sidebar = "";
+      if (page.query.item) {
+        sidebar = decode(page.query.item);
       }
       return {
         items: books.items,
@@ -39,8 +33,8 @@
         page: books.page,
         selected: `${orderBy}${reverse === "false" ? "" : "-reversed"}`,
         hideLoadMore,
-        layout,
         sidebar,
+        layout,
         type
       };
     } catch (err) {
@@ -72,9 +66,10 @@
   export let page;
   export let hideLoadMore = false;
   export let layout;
-  export let type = "library";
+  export let type;
   export let sidebar;
-  title.set(collection);
+  $: title.set(collection);
+  $: console.log(type);
   let notes;
   let library;
   const search = writable(window.location.search);
@@ -85,30 +80,57 @@
     notes = `/collections/${collection}/notes`;
     library = `/collections/${collection}`;
   }
-  const options = [
-    {
-      text: "Newest first",
-      value: "datePublished",
-      selected: selected === "datePublished"
-    },
-    {
-      text: "Oldest first",
-      value: "datePublished-reversed",
-      selected: selected === "datePublished-reversed"
-    },
-    {
-      text: "A-Z",
-      value: "title",
-      label: "Alphabetical, ascending",
-      selected: selected === "title"
-    },
-    {
-      text: "Z-A",
-      value: "title-reversed",
-      label: "Alphabetical, descending",
-      selected: selected === "title-reversed"
-    }
-  ];
+  let options;
+  $: if (type === "library") {
+    options = [
+      {
+        text: "Newest first",
+        value: "datePublished",
+        selected: selected === "datePublished"
+      },
+      {
+        text: "Oldest first",
+        value: "datePublished-reversed",
+        selected: selected === "datePublished-reversed"
+      },
+      {
+        text: "A-Z",
+        value: "title",
+        label: "Alphabetical, ascending",
+        selected: selected === "title"
+      },
+      {
+        text: "Z-A",
+        value: "title-reversed",
+        label: "Alphabetical, descending",
+        selected: selected === "title-reversed"
+      }
+    ];
+  } else {
+    options = [
+      {
+        text: "Newest first",
+        value: "created",
+        selected: selected === "created"
+      },
+      {
+        text: "Oldest first",
+        value: "created-reversed",
+        selected: selected === "created-reversed"
+      },
+      {
+        text: "Updated first",
+        value: "updated",
+        selected: selected === "updated"
+      },
+      {
+        text: "Updated last",
+        value: "updated-reversed",
+        selected: selected === "updated-reversed"
+      }
+    ];
+  }
+
   let order = {
     orderBy: "",
     reverse: "",
@@ -116,15 +138,16 @@
   };
   function onSelect(event) {
     const value = event.target.value.split("-");
+    const query = new window.URLSearchParams(window.location.search);
+    query.set("noHistory", "true");
     if (value[0] === "datePublished") {
-      order = {
-        orderBy: "",
-        reverse: "",
-        page: 1
-      };
+      query.delete("orderBy");
+      query.delete("reverse");
+      query.set("page", 1);
       if (value[1]) {
-        order.orderBy = "?orderBy=datePublished";
-        order.reverse = "&reverse=true";
+        query.set("orderBy", "datePublished");
+        query.set("reverse", "true");
+        query.set("page", 1);
       }
     } else {
       order = {
@@ -132,31 +155,66 @@
         reverse: "",
         page: 1
       };
+      query.set("orderBy", value[0]);
+      query.delete("reverse");
+      query.set("page", 1);
       if (value[1]) {
         order.reverse = "&reverse=true";
+        query.set("reverse", "true");
       }
     }
-    search.set(`${order.orderBy}${order.reverse}`);
-    const sidebarEncoded = sidebar ? encode(sidebar) : "";
+    search.set("?" + query.toString());
     return sapper.goto(
-      `/collections/${collection}/${type}/${sidebarEncoded}${order.orderBy}${order.reverse}`
+      `/collections/${collection}/${type}/?${query.toString()}`
     );
   }
-  async function loadMore() {
+
+  // Needs to update collection if $jobs has changed. Get first 10, remove those whose ID we already have, then prepend to collection.
+  // Then load more needs to filter out all books we've already loaded.
+  $: if (process.browser) {
+    check();
+  }
+  async function check() {
+    const endTime = Number(new Date()) + 1000 * 60 * 10;
+    const interval = 1000 * 10;
+    while (true) {
+      try {
+        await loadMore(true);
+        if (Number(new Date()) < endTime) {
+          await new Promise(resolve => setTimeout(resolve, interval));
+        }
+      } catch (err) {
+        return err;
+      }
+    }
+  }
+  async function loadMore(prepend) {
     try {
+      let page;
+      if (prepend) {
+        page = 1;
+      } else {
+        page = order.page + 1;
+        order.page = order.page + 1;
+      }
       const libraryAdditions = await window
         .fetch(
-          `/api/collections?collection=${collection}&page=${order.page +
-            1}${order.orderBy && order.orderBy.slice(1)}${
-            order.reverse
-          }&type=${type}`,
+          `/api/collections?collection=${collection}&page=${page}${order.orderBy &&
+            order.orderBy.slice(1)}${order.reverse}&type=${type}`,
           {
             credentials: "include"
           }
         )
         .then(response => response.json());
-      order.page = order.page + 1;
-      items = items.concat(libraryAdditions.items);
+      const itemIds = items.map(item => item.id);
+      const additions = libraryAdditions.items.filter(
+        item => itemIds.indexOf(item.id) === -1
+      );
+      if (prepend) {
+        items = additions.concat(items);
+      } else {
+        items = items.concat(additions);
+      }
       if (libraryAdditions.done) {
         hideLoadMore = true;
       }
@@ -186,10 +244,6 @@
       }
     };
   }
-  $: if (sidebar) {
-    infoBook.set({ id: sidebar });
-    currentInfoBook.set("");
-  }
 </script>
 
 <style>
@@ -197,18 +251,23 @@
     padding: var(--reader-left-margin);
   }
 
-  @media (min-width: 480px) {
-  }
   label,
   select,
   option {
     font-size: 1em;
   }
+  @media (max-width: 1100px) {
+    label,
+    select,
+    option,
+    .select {
+      font-size: 13px;
+    }
+  }
   select {
     display: inline-block;
     color: var(--dark);
     padding: 0.5em 2.5em 0.5em 0.5em;
-    min-width: 15rem;
     max-width: 100%;
     box-sizing: border-box;
     margin: 0;
@@ -261,23 +320,21 @@
   out:fly={{ y: 200, duration: 250 }}>
   <div class="ViewConfig">
     <CollectionTabs {collection} current={type} {notes} {library} />
-    {#if type === 'library'}
-      <div class="select">
-        Ordered By
-        <label>
-          <select name="viewConfig" id="viewConfig" on:change={onSelect}>
-            {#each options as option}
-              <option
-                value={option.value}
-                selected={option.selected}
-                aria-label={option.label || option.text}>
-                {option.text}
-              </option>
-            {/each}
-          </select>
-        </label>
-      </div>
-    {/if}
+    <div class="select">
+      Ordered By
+      <label>
+        <select name="viewConfig" id="viewConfig" on:change={onSelect}>
+          {#each options as option}
+            <option
+              value={option.value}
+              selected={option.selected}
+              aria-label={option.label || option.text}>
+              {option.text}
+            </option>
+          {/each}
+        </select>
+      </label>
+    </div>
   </div>
   <!-- Recent -->
   {#if items}

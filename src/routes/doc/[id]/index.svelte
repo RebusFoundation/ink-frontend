@@ -12,7 +12,7 @@
   import { stores } from "../../../stores";
   const { docStore } = stores();
   export let bookData;
-  docStore.set(bookData);
+  $: docStore.set(bookData);
 </script>
 
 <style>

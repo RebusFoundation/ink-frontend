@@ -2,13 +2,9 @@
   import { decode, encode } from "universal-base64url";
   import WithSidebars from "../components/WithSidebars.svelte";
   import { stores as inkStores } from "../stores";
-  import Collections from "../collections/Collections.svelte";
-  import InfoActions from "../components/InfoActions.svelte";
-  import BookContents from "../doc/BookContents.svelte";
-  import NoteModal from "../doc/NoteModal.svelte";
-  import UploadSidebar from "../uploader/UploadSidebar.svelte";
-  import SidebarModal from './SidebarModal.svelte'
-  import {opener, closer, activeModal} from "../actions/modal.js"
+  import Modals from "./Modals.svelte";
+  import Sidebar from "./Sidebar.svelte";
+  import { opener, closer } from "../actions/modal.js";
   import { stores, goto } from "@sapper/app";
   const { page, session } = stores();
   const { title, infoBook, currentInfoBook, note } = inkStores();
@@ -16,28 +12,38 @@
   let leftSidebar;
   let rightSidebar;
   let params = {};
-  let collection = 'all'
+  let collection = "all";
+  let history;
+  let firstRun = true;
+  let sidebarId;
   $: if ($page) {
     query = $page.query;
     params = $page.params;
+    console.log(params)
+    if (!firstRun && !query.noHistory) {
+      history = true;
+    } else {
+      firstRun = false;
+    }
     if (params.infoBook) {
-      leftSidebar = "item";
-    } if (params.path) {
+      leftSidebar = "info";
+      rightSidebar = "empty"
+    } else if (params.path) {
       leftSidebar = "contents";
+      rightSidebar = "notes"
     } else {
       leftSidebar = "collections";
     }
     if (params.collection) {
-      collection = params.collection[0]
+      collection = params.collection[0];
     }
     if (query.item) {
-      infoBook.set({ id: decode(query.item) });
-      currentInfoBook.set("");
+      sidebarId = decode(query.item)
       rightSidebar = "item";
     } else if (query.upload) {
       rightSidebar = "upload";
     } else if (query.note) {
-      note.set({ id: decode(query.note) });
+      sidebarId = decode(query.note)
       rightSidebar = "note";
     } else if (query.chapternotes) {
       rightSidebar = "chapternotes";
@@ -51,17 +57,19 @@
       rightSidebar = "addbooks";
     } else if (params.collection) {
       rightSidebar = "upload";
+      leftSidebar = "collections";
+    } else if ($page.path === "/") {
+      rightSidebar = "upload";
+      leftSidebar = "collections";
     }
   }
-  $: if (width <= 1200 && rightSidebar && query[rightSidebar]) {
-    opener({id: rightSidebar + '-modal'})
+  $: console.log(leftSidebar, rightSidebar, sidebarId)
+  $: if (width <= 1024 && rightSidebar && query[rightSidebar]) {
+    opener({ id: rightSidebar + "-modal" });
   } else {
-    closer()
+    closer();
   }
-  $: if ($session) {
-    console.log($session);
-  }
-  let width
+  let width;
 </script>
 
 <style>
@@ -75,48 +83,24 @@
 </style>
 
 <svelte:window bind:innerWidth={width} />
-<SidebarModal id={leftSidebar + '-modal'}>
-  {#if leftSidebar === 'item'}
-    <InfoActions modal={true} sidebar={true} />
-  {:else if leftSidebar === 'contents'}
-      <BookContents modal={true} />
-  {:else}
-    <Collections modal={true} />
-  {/if}
-</SidebarModal>
-<SidebarModal id={rightSidebar + '-modal'}>
-  {#if rightSidebar === 'item'}
-    <InfoActions modal={true} sidebar={true} />
-  {:else if  rightSidebar === 'upload'}
-    <UploadSidebar {collection} modal={true} />
-  {:else if rightSidebar === 'note'}
-    <NoteModal /> 
-  {/if}
-</SidebarModal>
-<main>
+<svelte:body/>
+<Modals {leftSidebar} {rightSidebar} {collection} id={sidebarId} />
+<main class:reader={params.path}>
   <WithSidebars
     title={$title}
     leftModal={leftSidebar + '-modal'}
     rightModal={rightSidebar + '-modal'}
     rightLabel={rightSidebar}>
-    <div slot="left-sidebar">
-      {#if leftSidebar === 'item'}
-        <InfoActions modal={false} sidebar={true} />
-      {:else if leftSidebar === 'contents'}
-        <BookContents modal={false} />
-      {:else}
-        <Collections />
-      {/if}
+    <div slot="left-sidebar" data-no-highlight>
+      <Sidebar
+        sidebar={leftSidebar}
+        {collection}
+        history={false}
+        side={'left'} id={sidebarId} />
     </div>
     <slot />
-    <div slot="right-sidebar">
-      {#if rightSidebar === 'item'}
-        <InfoActions modal={false} sidebar={true} />
-      {:else if  rightSidebar === 'upload'}
-        <UploadSidebar {collection} />
-      {:else if rightSidebar === 'note'}
-        <NoteModal /> 
-      {/if}
+    <div slot="right-sidebar" data-no-highlight>
+      <Sidebar sidebar={rightSidebar} {collection} {history} side={'right'} id={sidebarId} />
     </div>
   </WithSidebars>
 </main>

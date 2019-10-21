@@ -26,7 +26,9 @@
     fontSize,
     chapterTitle,
     configuringReader,
-    notes
+    notes,
+    title,
+    updateNotes
   } = stores();
   function handleCurrent({ detail }) {
     currentLocation.set({
@@ -54,6 +56,7 @@
   export let chapter;
   $: if (book) {
     docStore.set(book);
+    title.set(book.name);
   }
   $: if (chapter) {
     chapterStore.set(chapter);
@@ -61,19 +64,6 @@
   let width = 0;
   let sidebar = true;
   let sidebargrid = true;
-  let sidebarWidth;
-  $: if (
-    sidebarWidth !==
-    getComputedStyle(document.documentElement).getPropertyValue(
-      "--reader-sidebar-width"
-    ) +
-      "px"
-  ) {
-    document.documentElement.style.setProperty(
-      "--reader-sidebar-width",
-      sidebarWidth + "px"
-    );
-  }
 
   onMount(async () => {
     window.lifecycle.addEventListener("statechange", handleLifeCycle);
@@ -109,7 +99,14 @@
   document.addEventListener("selectionchange", () => {
     const selection = document.getSelection();
     if (selection && !selection.isCollapsed) {
-      selectionRange = selection.getRangeAt(0);
+      const tempRange = selection.getRangeAt(0);
+      let common = tempRange.commonAncestorContainer 
+      if (!common.querySelector) {
+        common = common.parentElement
+      }
+      if (!common.closest("[data-no-highlight], .Highlight")) {
+        selectionRange = selection.getRangeAt(0);
+      }
     } else {
       selectionRange = null;
     }
@@ -117,31 +114,6 @@
 </script>
 
 <style>
-  .Sidebar {
-    display: none;
-  }
-  @media (min-width: 1024px) {
-    .BookBody.sidebar {
-      display: grid;
-      grid-template-columns: minmax(300px, 0.4fr) 1fr;
-      grid-template-areas:
-        "sidebar body"
-        "sidebar body"
-        "sidebar body";
-    }
-    .BookBody.sidebar :global(.Chapter) {
-      grid-column: 2 / -1;
-    }
-    .Sidebar {
-      display: block;
-      background-color: white;
-      height: 100vh;
-      position: sticky;
-      top: 0px;
-      grid-area: sidebar;
-      padding: 0 0.25rem;
-    }
-  }
   .LeftButton {
     align-self: flex-start;
   }
@@ -244,53 +216,41 @@
       display: none;
     }
   }
+  .BookBody {
+    display: grid;
+    grid-template-columns: 24px 1fr 24px;
+    grid-template-rows: 1fr 40px;
+    grid-template-areas:
+      "sidebar main right"
+      "navbar navbar navbar";
+  }
 </style>
 
 <svelte:window bind:innerWidth={width} />
 <svelte:head>
-  {#if chapter.stylesheets.length !== 0}
+  <!-- {#if chapter.stylesheets.length !== 0}
     {#each chapter.stylesheets as sheet}
       <link
         rel="stylesheet"
         href={`/api/clean-css?css=${encodeURIComponent(sheet)}`} />
     {/each}
-  {/if}
+  {/if} -->
   <title>{book.name} - {$chapterTitle} - Rebus Ink</title>
 </svelte:head>
 
 {#if book}
-  <div
-    class="BookBody"
-    bind:this={bookBody}
-    class:sidebar={sidebargrid}
-    data-current={$currentLocation.location}>
-    {#if sidebar}
-      <div bind:clientWidth={sidebarWidth} class="Sidebar">
-        <BookContents modal={false} />
-      </div>
-    {/if}
-    <!-- Menubar -->
+  <!-- Menubar -->
+  {#if $configuringReader}
     <Toolbar>
-      <span slot="left-button" class="LeftButton">
-
-        <Progress
-          chapters={book.readingOrder}
-          current={chapter.index}
-          {width}
-          on:toggle-sidebar={() => {
-            sidebar = !sidebar;
-            sidebargrid = !sidebargrid;
-          }} />
-      </span>
+      <span slot="left-button" class="LeftButton" />
       <span slot="toolbar-title">
-        {#if $configuringReader}
-          <label>
-            <span class="SelectLabel">Theme</span>
-            <select
-              name="viewConfig"
-              id="Theme"
-              on:change={event => theme.save(event.target.value)}>
-              <!-- 
+        <label>
+          <span class="SelectLabel">Theme</span>
+          <select
+            name="viewConfig"
+            id="Theme"
+            on:change={event => theme.save(event.target.value)}>
+            <!-- 
   --fonts: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen-Sans, Ubuntu, Cantrell, "Helvetica Neue", sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -301,90 +261,89 @@
     Roboto, Noto, "Helvetica Neue", Arial, sans-serif;
   --humanist-sans-fonts: Seravek, Calibri, Roboto, Arial, sans-serif;
   --monospace-fonts: "Andale Mono", Consolas, monospace; -->
-              <option
-                value="old-style"
-                selected={$theme === 'old-style'}
-                aria-label="Old Style (Default)">
-                Old Style (Default)
-              </option>
-              <option
-                value="modern-serif"
-                selected={$theme === 'modern-serif'}
-                aria-label="Modern Serif">
-                Modern Serif
-              </option>
-              <option
-                value="neutral"
-                selected={$theme === 'neutral'}
-                aria-label="Neutral">
-                Neutral
-              </option>
-              <option
-                value="humanist-sans"
-                selected={$theme === 'humanist-sans'}
-                aria-label="Humanist Sans">
-                Humanist Sans
-              </option>
-              <option
-                value="duo-accessible"
-                selected={$theme === 'duo-accessible'}
-                aria-label="Duo (accessible)">
-                Duo (accessible)
-              </option>
-            </select>
-          </label>
-          <label>
-            <span class="SelectLabel">Font Size</span>
-            <select
-              name="viewConfig"
-              id="viewConfig"
-              on:change={event => fontSize.save(event.target.value)}>
+            <option
+              value="old-style"
+              selected={$theme === 'old-style'}
+              aria-label="Old Style (Default)">
+              Old Style (Default)
+            </option>
+            <option
+              value="modern-serif"
+              selected={$theme === 'modern-serif'}
+              aria-label="Modern Serif">
+              Modern Serif
+            </option>
+            <option
+              value="neutral"
+              selected={$theme === 'neutral'}
+              aria-label="Neutral">
+              Neutral
+            </option>
+            <option
+              value="humanist-sans"
+              selected={$theme === 'humanist-sans'}
+              aria-label="Humanist Sans">
+              Humanist Sans
+            </option>
+            <option
+              value="duo-accessible"
+              selected={$theme === 'duo-accessible'}
+              aria-label="Duo (accessible)">
+              Duo (accessible)
+            </option>
+          </select>
+        </label>
+        <label>
+          <span class="SelectLabel">Font Size</span>
+          <select
+            name="viewConfig"
+            id="viewConfig"
+            on:change={event => fontSize.save(event.target.value)}>
 
-              <option
-                value="xx-small"
-                selected={$fontSize === 'xx-small'}
-                aria-label="Tiny">
-                Tiny
-              </option>
-              <option
-                value="x-small"
-                selected={$fontSize === 'x-small'}
-                aria-label="Extra Small">
-                Extra Small
-              </option>
-              <option
-                value="small"
-                selected={$fontSize === 'small'}
-                aria-label="Small">
-                Small
-              </option>
-              <option
-                value="regular"
-                selected={$fontSize === 'regular'}
-                aria-label="Regular">
-                Regular
-              </option>
-              <option
-                value="bigger"
-                selected={$fontSize === 'bigger'}
-                aria-label="Bigger">
-                Bigger
-              </option>
-              <option
-                value="large"
-                selected={$fontSize === 'large'}
-                aria-label="Large">
-                Large
-              </option>
-              <option
-                value="x-large"
-                selected={$fontSize === 'x-large'}
-                aria-label="Extra Large">
-                Extra Large
-              </option>
-            </select>
-          </label>
-        {:else}{book.name}{/if}
+            <option
+              value="xx-small"
+              selected={$fontSize === 'xx-small'}
+              aria-label="Tiny">
+              Tiny
+            </option>
+            <option
+              value="x-small"
+              selected={$fontSize === 'x-small'}
+              aria-label="Extra Small">
+              Extra Small
+            </option>
+            <option
+              value="small"
+              selected={$fontSize === 'small'}
+              aria-label="Small">
+              Small
+            </option>
+            <option
+              value="regular"
+              selected={$fontSize === 'regular'}
+              aria-label="Regular">
+              Regular
+            </option>
+            <option
+              value="bigger"
+              selected={$fontSize === 'bigger'}
+              aria-label="Bigger">
+              Bigger
+            </option>
+            <option
+              value="large"
+              selected={$fontSize === 'large'}
+              aria-label="Large">
+              Large
+            </option>
+            <option
+              value="x-large"
+              selected={$fontSize === 'x-large'}
+              aria-label="Extra Large">
+              Extra Large
+            </option>
+          </select>
+        </label>
       </span>
       <span slot="right-button">
         {#if $configuringReader}
@@ -399,6 +358,20 @@
         {/if}
       </span>
     </Toolbar>
+  {/if}
+  <div
+    class="BookBody"
+    bind:this={bookBody}
+    data-current={$currentLocation.location}>
+    <!-- This needs to be first positioned using the grid, then made sticky -->
+    <Progress
+      chapters={book.readingOrder}
+      current={chapter.index}
+      {width}
+      on:toggle-sidebar={() => {
+        sidebar = !sidebar;
+        sidebargrid = !sidebargrid;
+      }} />
     <!-- Should have all chapters appear, they should get values from stores and only use props for chapter assignments. Only when props match store is the chapter rendered -->
     {#each book.readingOrder as chapter, index}
       <Chapter

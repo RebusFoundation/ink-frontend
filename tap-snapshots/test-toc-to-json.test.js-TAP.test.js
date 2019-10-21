@@ -4,10 +4,8 @@
  * Re-generate by setting TAP_SNAPSHOT=1 and running tests.
  * Make sure to inspect the output below.  Do not ignore changes!
  */
-"use strict";
-exports[
-  `test/toc-to-json.test.js TAP parseToC - epub2 > parseToC - epub2 1`
-] = `
+'use strict'
+exports[`test/toc-to-json.test.js TAP parseToC - epub2 > parseToC - epub2 1`] = `
 Object {
   "children": Array [
     Object {
@@ -97,11 +95,9 @@ Object {
   "type": "NCX",
   "url": "https://example.com/dev-static/demo-epub/pg55456-images/OEBPS/toc.ncx",
 }
-`;
+`
 
-exports[
-  `test/toc-to-json.test.js TAP parseToC - epub3 - 2 > parseToC - epub3 - 2 1`
-] = `
+exports[`test/toc-to-json.test.js TAP parseToC - epub3 - 2 > parseToC - epub3 - 2 1`] = `
 Object {
   "children": Array [
     Object {
@@ -115,11 +111,9 @@ Object {
   "type": "html",
   "url": "https://example.com/dev-static/demo-epub/childrens-literature/EPUB/nav.xhtml",
 }
-`;
+`
 
-exports[
-  `test/toc-to-json.test.js TAP parseToC - epub3 - 3 > parseToC - epub3 - 3 1`
-] = `
+exports[`test/toc-to-json.test.js TAP parseToC - epub3 - 3 > parseToC - epub3 - 3 1`] = `
 Object {
   "children": Array [
     Object {
@@ -133,11 +127,9 @@ Object {
   "type": "html",
   "url": "https://example.com/dev-static/demo-epub/childrens-literature/EPUB/nav.xhtml",
 }
-`;
+`
 
-exports[
-  `test/toc-to-json.test.js TAP parseToC - epub3 > parseToC - epub3 1`
-] = `
+exports[`test/toc-to-json.test.js TAP parseToC - epub3 > parseToC - epub3 1`] = `
 Object {
   "children": Array [
     Object {
@@ -303,4 +295,4 @@ Object {
   "type": "html",
   "url": "https://example.com/dev-static/demo-epub/childrens-literature/EPUB/nav.xhtml",
 }
-`;
+`

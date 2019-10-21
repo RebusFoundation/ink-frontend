@@ -26,6 +26,7 @@
   --warning-light: #fffbef;
   --disabled: #c6c6c6;
   --button-background-color: #f9f9f9;
+  --reader-sidebar-background: #ffffff;
 }
 :root {
   --reader-font-size: 1.1rem;

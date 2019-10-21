@@ -59,7 +59,7 @@
     color: black;
   }
   .current {
-    background-color: white;
+    background-color: var(--main-background-color);
     color: var(--link);
   }
   :global(.BookContents.modal) .current {

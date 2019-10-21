@@ -4,7 +4,7 @@
  * Re-generate by setting TAP_SNAPSHOT=1 and running tests.
  * Make sure to inspect the output below.  Do not ignore changes!
  */
-"use strict";
+'use strict'
 exports[`test/clean-css.test.js TAP cleanCSS > cleanCSS 1`] = `
 ins.correction{
 border-bottom:thin dotted silver;
@@ -380,4 +380,4 @@ background-color:url("https://example.com/background-image.png");
 body{
 background-color:white;
 }
-`;
+`

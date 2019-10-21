@@ -1,7 +1,9 @@
 import queue from "async-es/queue";
 import { writable } from "svelte/store";
 import { fetchWrap } from "../api/fetch-wrap.js";
+import { stores } from "../stores";
 const { subscribe, set, update } = writable([]);
+const { jobs } = stores();
 
 const importQueue = queue(upload);
 importQueue.drain(() => {
@@ -17,6 +19,11 @@ async function upload(file) {
     update(files => {
       const set = new Set(files);
       set.delete(file);
+      return [...set];
+    });
+    jobs.update(entries => {
+      const set = new Set(entries);
+      set.add(job);
       return [...set];
     });
     return job;

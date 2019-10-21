@@ -34,6 +34,11 @@
     border-radius: 4px;
     font-weight: 600;
   }
+  @media (max-width: 1100px) {
+    a {
+      font-size: 13px;
+    }
+  }
 </style>
 
 <ol class="tabs">

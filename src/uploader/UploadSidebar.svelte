@@ -1,6 +1,7 @@
 <script>
-  import Upload from "./Upload.svelte"
-  import UploadQueue from "../uploader/UploadQueue.svelte";
+  import Upload from "./Upload.svelte";
+  import UploadQueue from "./UploadQueue.svelte";
+  import JobsQueue from "./JobsQueue.svelte";
   import { uploadQueue } from "../uploader/upload-doc.js";
   export let modal = false;
   export let collection;
@@ -43,19 +44,22 @@
   }
 </style>
 
-
 <div class="sidebar">
-{#if modal}
-  <h1>Upload to <em>{collection}</h1>
-{:else}
-      <div class="top">
-        <h2>Upload to <em>{collection}</em></h2>
-      </div>
-{/if}
+  {#if modal}
+    <h1>
+      Upload to
+      <em>{collection}</em>
+    </h1>
+  {:else}
+    <div class="top">
+      <h2>Upload to “{collection}”</h2>
+    </div>
+  {/if}
   <div class="upload">
     <Upload upload={fileDrop} />
   </div>
   {#if uploadQueue}
     <UploadQueue queue={uploadQueue} />
   {/if}
+  <JobsQueue {collection} />
 </div>

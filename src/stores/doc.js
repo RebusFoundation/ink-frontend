@@ -4,6 +4,7 @@ import { get, set } from "idb-keyval";
 export const docStore = writable({});
 
 export const chapterStore = writable({});
+export const updateNotes = writable(new Date().toISOString());
 
 export const contents = derived(docStore, ($docStore, set) => {
   if ($docStore.resources) {
@@ -23,9 +24,9 @@ export const contents = derived(docStore, ($docStore, set) => {
     set({});
   }
 });
-export const notes = derived(chapterStore, ($chapterStore, set) => {
+export const notes = derived([chapterStore, updateNotes], ([$chapterStore, $updateNotes], set) => {
   try {
-    if ($chapterStore.url) {
+    if ($chapterStore.url && $updateNotes) {
       window
         .fetch(`/api/notes?path=${encodeURIComponent($chapterStore.url)}`)
         .then(response => response.json())
@@ -58,8 +59,10 @@ export const chapterTitle = derived(
   [chapterStore, contents],
   ([$chapterStore, $contents]) => {
     function findTitle(currentTitle, entry) {
-      const path = new URL(entry.url, "http://example.com/").pathname;
-      if ($chapterStore.url.includes(path)) {
+      const path = new URL(entry.url, "http://example.com/").pathname.replace('/doc', '');
+      if (currentTitle !== "") {
+        return currentTitle;
+      } else if ($chapterStore.url.includes(path)) {
         return entry.label;
       } else if (entry.children) {
         return entry.children.reduce(findTitle, currentTitle);
