@@ -164,6 +164,9 @@
     border-radius: 0;
     position: relative;
   }
+  .Chapter .Highlight[data-highlight-label="question"] {
+    background-color: var(--rc-lighter);
+  }
   .Chapter mark.Highlight[data-highlight-level="1"] {
     background-color: #7afcff;
   }

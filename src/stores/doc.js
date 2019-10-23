@@ -30,7 +30,10 @@ export const notes = derived([chapterStore, updateNotes], ([$chapterStore, $upda
       window
         .fetch(`/api/notes?path=${encodeURIComponent($chapterStore.url)}`)
         .then(response => response.json())
-        .then(notesData => set(notesData));
+        .then(notesData => {
+          notesData.chapter = $chapterStore.url
+          return set(notesData)
+        });
     } else {
       set({});
     }
@@ -70,7 +73,7 @@ export const chapterTitle = derived(
         return currentTitle;
       }
     }
-    if ($chapterStore && $contents && $contents.children) {
+    if ($chapterStore.url && $contents && $contents.children) {
       return $contents.children.reduce(findTitle, "");
     } else {
       return "";

@@ -19,7 +19,6 @@
   $: if ($page) {
     query = $page.query;
     params = $page.params;
-    console.log(params)
     if (!firstRun && !query.noHistory) {
       history = true;
     } else {

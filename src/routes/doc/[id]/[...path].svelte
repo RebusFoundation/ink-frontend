@@ -1,11 +1,12 @@
-<script context="module">
+<!-- <script context="module">
   import { preload as _preload } from "./_preload.js";
   // your script goes here
   export const preload = _preload;
-</script>
+</script> -->
 
 <script>
   import { onMount, tick, onDestroy } from "svelte";
+  import Loading from "../../../components/Loading.svelte";
   import Chapter from "../../../doc/Chapter.svelte";
   import Navbar from "../../../doc/Navbar.svelte";
   import Progress from "../../../doc/Progress.svelte";
@@ -15,7 +16,10 @@
   import InfoActions from "../../../components/InfoActions.svelte";
   import { read } from "../../../api/read.js";
   import { handleHighlight, highlightNotes } from "./_handleHighlight.js";
+  import {getBook, getChapter, getChapterFromPath} from "./_utils.js"
   import { stores } from "../../../stores";
+  import { stores as sapperStores } from "@sapper/app";
+  const { page, session } = sapperStores();
   const {
     docStore,
     chapterStore,
@@ -49,17 +53,32 @@
       `var(--${$theme}-fonts)`
     );
   }
-  $: if (bookBody && $notes.items) {
-    highlightNotes(bookBody, $notes);
+  let book;
+  let chapters;
+  title.set("Loading...");
+  $: if ($page.params.id && (!$docStore.id || !$docStore.id.includes($page.params.id))) {
+    book = getBook($page).then(({book, chapter}) => {
+      docStore.set(book);
+      title.set(book.name);
+      return getChapter(chapter)
+    }).then((chapter) => {
+      chapterStore.set(chapter);
+    })
   }
-  export let book;
-  export let chapter;
-  $: if (book) {
-    docStore.set(book);
-    title.set(book.name);
+  $: if ($page.params.path && $chapterStore.url && !$chapterStore.url.includes($page.params.path.join('/'))) {
+    let oldDoc = $docStore
+    book = getChapterFromPath(oldDoc, $page.params.path)
+      .then(chapter => {
+        chapterStore.set(chapter);
+      })
   }
-  $: if (chapter) {
-    chapterStore.set(chapter);
+  $: if (bookBody && $docStore.position && $docStore.position.path === $chapterStore.url) {
+    const location = document.querySelector(
+      `[data-location="${$docStore.position.location}"]`
+    );
+    if (location) {
+      location.scrollIntoView({ behavior: "smooth" });
+    }
   }
   let width = 0;
   let sidebar = true;
@@ -67,21 +86,13 @@
 
   onMount(async () => {
     window.lifecycle.addEventListener("statechange", handleLifeCycle);
-    await tick();
-    if ($docStore.position && $docStore.position.path === $chapterStore.url) {
-      const location = document.querySelector(
-        `[data-location="${$docStore.position.location}"]`
-      );
-      if (location) {
-        location.scrollIntoView({ behavior: "smooth" });
-      }
-    }
   });
   onDestroy(() => {
     const location = $currentLocation.location;
     const chapter = $chapterStore.url;
     const url = new URL(`/${$docStore.id}/`, $chapterStore.url).href;
-
+    docStore.set({})
+    chapterStore.set({})
     read(url, location, chapter);
     window.lifecycle.removeEventListener("statechange", handleLifeCycle);
   });
@@ -91,8 +102,10 @@
       event.oldState === "active" &&
       $currentLocation
     ) {
-      const url = new URL(`/${$docStore.id}/`, $chapterStore.url).href;
-      read(url, $currentLocation.location, $chapterStore.url);
+      if ($docStore.id && $chapterStore.url) {
+        const url = new URL(`/${$docStore.id}/`, $chapterStore.url).href;
+        read(url, $currentLocation.location, $chapterStore.url);
+      }
     }
   }
   let selectionRange = null;
@@ -225,20 +238,14 @@
       "navbar navbar navbar";
   }
 </style>
-
 <svelte:window bind:innerWidth={width} />
 <svelte:head>
-  <!-- {#if chapter.stylesheets.length !== 0}
-    {#each chapter.stylesheets as sheet}
-      <link
-        rel="stylesheet"
-        href={`/api/clean-css?css=${encodeURIComponent(sheet)}`} />
-    {/each}
-  {/if} -->
-  <title>{book.name} - {$chapterTitle} - Rebus Ink</title>
+  <title>{$docStore.name} - {$chapterTitle} - Rebus Ink</title>
 </svelte:head>
-
-{#if book}
+{#if $docStore}
+  {#await book}
+    <Loading />
+  {:then resources}
   <!-- Menubar -->
   {#if $configuringReader}
     <Toolbar>
@@ -365,19 +372,20 @@
     data-current={$currentLocation.location}>
     <!-- This needs to be first positioned using the grid, then made sticky -->
     <Progress
-      chapters={book.readingOrder}
-      current={chapter.index}
+      chapters={$docStore.readingOrder}
+      current={$chapterStore.index}
       {width}
       on:toggle-sidebar={() => {
         sidebar = !sidebar;
         sidebargrid = !sidebargrid;
       }} />
     <!-- Should have all chapters appear, they should get values from stores and only use props for chapter assignments. Only when props match store is the chapter rendered -->
-    {#each book.readingOrder as chapter, index}
+    {#each $docStore.readingOrder as chapter, index}
       <Chapter
         on:current={handleCurrent}
         on:appearing={handleAppearing}
-        chapterIndex={index} />
+        chapterIndex={index}
+        {chapter} />
     {/each}
 
     {#if $navigation}
@@ -385,7 +393,7 @@
         {#if selectionRange}
           <Button
             click={() => {
-              handleHighlight(selectionRange, bookBody, chapter);
+              handleHighlight(selectionRange, bookBody, $chapterStore);
             }}>
             Highlight
           </Button>
@@ -395,4 +403,5 @@
       <Navbar />
     {/if}
   </div>
+  {/await}
 {/if}

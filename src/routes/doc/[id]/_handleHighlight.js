@@ -109,6 +109,9 @@ function highlightNote(selector, root, id, note) {
       if (note.json.comment) {
         highlight.classList.add("Commented");
       }
+      if (note && note.json && note.json.label) {
+        highlight.dataset.highlightLabel = note.json.label
+      }
       highlight.root = root;
       // highlight.addEventListener('click', event => {
       //   console.log('highlight clicked', highlight.dataset.href)

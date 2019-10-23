@@ -9,6 +9,7 @@ yarn-error.log
 /.firebase/
 /.nyc_output/
 keyfile.json
+ink-frontend-dev-firebase-adminsdk-5f2b6-048ffd4da0.json
 /level-session-store/
 <<<<<<< HEAD
 .env

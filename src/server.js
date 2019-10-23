@@ -11,11 +11,12 @@ const dev = NODE_ENV === "development";
 if (dev) {
   const serviceAccount = require(path.resolve(
     __dirname,
-    "../../../keyfile.json"
+    `../../../${process.env.KEYFILE}`
   ));
   const firebase = admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://thematic-cider-139815.firebaseio.com"
+    databaseURL: process.env.FIREBASE_DB_URL,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET
   });
   const app = serverSetup(sapper, { firebase });
   app.listen(PORT);

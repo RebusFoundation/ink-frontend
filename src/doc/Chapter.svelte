@@ -1,5 +1,6 @@
 <script>
   import { onMount, onDestroy, createEventDispatcher } from "svelte";
+  import {highlightNotes} from '../routes/doc/[id]/_handleHighlight.js'
   import { stores } from "../stores";
   import { fade } from "svelte/transition";
   import ChapterBody from "./ChapterBody.svelte";
@@ -10,7 +11,8 @@
     contents,
     currentLocation,
     theme,
-    fontSize
+    fontSize,
+    notes
   } = stores();
   const dispatch = createEventDispatcher();
   let { url, index } = $chapterStore;
@@ -19,6 +21,7 @@
   let highest;
   let chapterElement;
   export let chapterIndex;
+  export let chapter;
   onMount(() => {
     if (!positionObserver) {
       positionObserver = new window.IntersectionObserver(onPosition, {
@@ -62,14 +65,14 @@
     if (positionObserver) positionObserver.disconnect();
     if (locationObserver) locationObserver.disconnect();
   });
-  function handleIntroEnd() {
-    window.requestAnimationFrame(() => {});
-  }
   $: if (chapterElement) {
     chapterElement.querySelectorAll("[data-location]").forEach(element => {
       positionObserver.observe(element);
       locationObserver.observe(element);
     });
+  }
+  $: if (chapterElement && $notes.items && $notes.chapter === $chapterStore.url) {
+    highlightNotes(chapterElement, $notes);
   }
 </script>
 
@@ -101,7 +104,7 @@
 </style>
 
 {#if $docStore && $chapterStore && $chapterStore.index === chapterIndex}
-  <div class="Chapter" bind:this={chapterElement} on:introend={handleIntroEnd}>
+  <div class="Chapter" bind:this={chapterElement}>
     <ChapterBody html={$chapterStore.html} />
     <div class="ChapterNotes" />
   </div>

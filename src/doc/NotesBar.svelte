@@ -3,11 +3,6 @@
   const {notesEditor, notes} = stores();
   let editorRange
   function buttonAction (type) {
-    if ($notesEditor.focus) {
-      const selection = window.getSelection()
-      selection.removeAllRanges();
-      selection.addRange($notesEditor.focus)
-    }
     document.execCommand(type, false, "")
     notesEditor.update((config) => {
       config[type] = !config[type]
@@ -24,7 +19,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: var(--reader-sidebar-background);
+    background-color: var(--sidebar-background-color);
     z-index: 3;
     line-height: 1;
     padding: 0.25rem 0.5rem;
@@ -87,8 +82,11 @@
 <div class="NotesBar">
 {#if $notes.items}
     <span>
-    <button class="Button" type="button" aria-label="Bold" class:active={$notesEditor.bold} on:click={(event) =>{
+    <button class="Button" type="button" aria-label="Bold" class:active={$notesEditor.bold} on:mousedown={(event) => {
       event.preventDefault();
+      console.log("mousedown", $notesEditor)
+    }} on:click={(event) =>{
+      console.log("click", $notesEditor)
       buttonAction('bold')
     }}><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path></svg></button>
 
