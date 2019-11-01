@@ -68,6 +68,7 @@
     width: 6rem;
     height: 8.5rem;
     border-radius: var(--border-radius);
+    box-shadow: 1px 2px 2px 0 rgba(133, 133, 133, 0.1);
   }
   .BookCard-title {
     margin: 0.25rem 0;
@@ -116,6 +117,9 @@
   }
   .BookCard-paragraph--tags {
     margin-top: 0.5rem;
+  }
+  .covers .BookCard-icon {
+    box-shadow: 1px 2px 2px 0 rgba(133, 133, 133, 0.1);
   }
   .square .BookCard-group {
     display: none;

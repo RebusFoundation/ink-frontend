@@ -1,9 +1,3 @@
-<!-- <script context="module">
-  import { preload as _preload } from "./_preload.js";
-  // your script goes here
-  export const preload = _preload;
-</script> -->
-
 <script>
   import { onMount, tick, onDestroy } from "svelte";
   import Loading from "../../../components/Loading.svelte";
@@ -16,7 +10,7 @@
   import InfoActions from "../../../components/InfoActions.svelte";
   import { read } from "../../../api/read.js";
   import { handleHighlight, highlightNotes } from "./_handleHighlight.js";
-  import {getBook, getChapter, getChapterFromPath} from "./_utils.js"
+  import { getBook, getChapter, getChapterFromPath } from "./_utils.js";
   import { stores } from "../../../stores";
   import { stores as sapperStores } from "@sapper/app";
   const { page, session } = sapperStores();
@@ -31,6 +25,7 @@
     chapterTitle,
     configuringReader,
     notes,
+    notesCollection,
     title,
     updateNotes
   } = stores();
@@ -56,23 +51,37 @@
   let book;
   let chapters;
   title.set("Loading...");
-  $: if ($page.params.id && (!$docStore.id || !$docStore.id.includes($page.params.id))) {
-    book = getBook($page).then(({book, chapter}) => {
-      docStore.set(book);
-      title.set(book.name);
-      return getChapter(chapter)
-    }).then((chapter) => {
-      chapterStore.set(chapter);
-    })
-  }
-  $: if ($page.params.path && $chapterStore.url && !$chapterStore.url.includes($page.params.path.join('/'))) {
-    let oldDoc = $docStore
-    book = getChapterFromPath(oldDoc, $page.params.path)
+  let selectionRange = null;
+  $: if (
+    $page.params.id &&
+    (!$docStore.id || !$docStore.id.includes($page.params.id))
+  ) {
+    book = getBook($page)
+      .then(({ book, chapter }) => {
+        docStore.set(book);
+        title.set(book.name);
+        return getChapter(chapter);
+      })
       .then(chapter => {
         chapterStore.set(chapter);
-      })
+      });
   }
-  $: if (bookBody && $docStore.position && $docStore.position.path === $chapterStore.url) {
+  $: if (
+    $page.params.path &&
+    $chapterStore.url &&
+    !$chapterStore.url.includes($page.params.path.join("/"))
+  ) {
+    selectionRange = null;
+    let oldDoc = $docStore;
+    book = getChapterFromPath(oldDoc, $page.params.path).then(chapter => {
+      chapterStore.set(chapter);
+    });
+  }
+  $: if (
+    bookBody &&
+    $docStore.position &&
+    $docStore.position.path === $chapterStore.url
+  ) {
     const location = document.querySelector(
       `[data-location="${$docStore.position.location}"]`
     );
@@ -91,8 +100,8 @@
     const location = $currentLocation.location;
     const chapter = $chapterStore.url;
     const url = new URL(`/${$docStore.id}/`, $chapterStore.url).href;
-    docStore.set({})
-    chapterStore.set({})
+    docStore.set({});
+    chapterStore.set({});
     read(url, location, chapter);
     window.lifecycle.removeEventListener("statechange", handleLifeCycle);
   });
@@ -108,14 +117,13 @@
       }
     }
   }
-  let selectionRange = null;
   document.addEventListener("selectionchange", () => {
     const selection = document.getSelection();
     if (selection && !selection.isCollapsed) {
       const tempRange = selection.getRangeAt(0);
-      let common = tempRange.commonAncestorContainer 
+      let common = tempRange.commonAncestorContainer;
       if (!common.querySelector) {
-        common = common.parentElement
+        common = common.parentElement;
       }
       if (!common.closest("[data-no-highlight], .Highlight")) {
         selectionRange = selection.getRangeAt(0);
@@ -153,6 +161,7 @@
     background-repeat: no-repeat, repeat;
     background-position: right 0.7em top 50%, 0 0;
     background-size: 1em auto, 100%;
+    box-shadow: 1px 2px 2px 0 rgba(133, 133, 133, 0.1);
   }
   select::-ms-expand {
     display: none;
@@ -184,6 +193,8 @@
   }
   .SelectLabel {
     padding: 0 0.25rem;
+    font-size: 0.75rem;
+    color: var(--medium);
   }
   .TextButton {
     display: inline-block;
@@ -231,13 +242,19 @@
   }
   .BookBody {
     display: grid;
-    grid-template-columns: 24px 1fr 24px;
+    grid-template-columns: var(--reader-left-margin) 1fr var(--reader-left-margin);
     grid-template-rows: 1fr 40px;
     grid-template-areas:
       "sidebar main right"
       "navbar navbar navbar";
   }
 </style>
+
+<!-- <script context="module">
+  import { preload as _preload } from "./_preload.js";
+  // your script goes here
+  export const preload = _preload;
+</script> -->
 <svelte:window bind:innerWidth={width} />
 <svelte:head>
   <title>{$docStore.name} - {$chapterTitle} - Rebus Ink</title>
@@ -246,18 +263,18 @@
   {#await book}
     <Loading />
   {:then resources}
-  <!-- Menubar -->
-  {#if $configuringReader}
-    <Toolbar>
-      <span slot="left-button" class="LeftButton" />
-      <span slot="toolbar-title">
-        <label>
-          <span class="SelectLabel">Theme</span>
-          <select
-            name="viewConfig"
-            id="Theme"
-            on:change={event => theme.save(event.target.value)}>
-            <!-- 
+    <!-- Menubar -->
+    {#if $configuringReader}
+      <Toolbar>
+        <span slot="left-button" class="LeftButton" />
+        <span slot="toolbar-title">
+          <label>
+            <span class="SelectLabel">Theme</span>
+            <select
+              name="viewConfig"
+              id="Theme"
+              on:change={event => theme.save(event.target.value)}>
+              <!-- 
   --fonts: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen-Sans, Ubuntu, Cantrell, "Helvetica Neue", sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -268,140 +285,140 @@
     Roboto, Noto, "Helvetica Neue", Arial, sans-serif;
   --humanist-sans-fonts: Seravek, Calibri, Roboto, Arial, sans-serif;
   --monospace-fonts: "Andale Mono", Consolas, monospace; -->
-            <option
-              value="old-style"
-              selected={$theme === 'old-style'}
-              aria-label="Old Style (Default)">
-              Old Style (Default)
-            </option>
-            <option
-              value="modern-serif"
-              selected={$theme === 'modern-serif'}
-              aria-label="Modern Serif">
-              Modern Serif
-            </option>
-            <option
-              value="neutral"
-              selected={$theme === 'neutral'}
-              aria-label="Neutral">
-              Neutral
-            </option>
-            <option
-              value="humanist-sans"
-              selected={$theme === 'humanist-sans'}
-              aria-label="Humanist Sans">
-              Humanist Sans
-            </option>
-            <option
-              value="duo-accessible"
-              selected={$theme === 'duo-accessible'}
-              aria-label="Duo (accessible)">
-              Duo (accessible)
-            </option>
-          </select>
-        </label>
-        <label>
-          <span class="SelectLabel">Font Size</span>
-          <select
-            name="viewConfig"
-            id="viewConfig"
-            on:change={event => fontSize.save(event.target.value)}>
+              <option
+                value="old-style"
+                selected={$theme === 'old-style'}
+                aria-label="Old Style (Default)">
+                Old Style (Default)
+              </option>
+              <option
+                value="modern-serif"
+                selected={$theme === 'modern-serif'}
+                aria-label="Modern Serif">
+                Modern Serif
+              </option>
+              <option
+                value="neutral"
+                selected={$theme === 'neutral'}
+                aria-label="Neutral">
+                Neutral
+              </option>
+              <option
+                value="humanist-sans"
+                selected={$theme === 'humanist-sans'}
+                aria-label="Humanist Sans">
+                Humanist Sans
+              </option>
+              <option
+                value="duo-accessible"
+                selected={$theme === 'duo-accessible'}
+                aria-label="Duo (accessible)">
+                Duo (accessible)
+              </option>
+            </select>
+          </label>
+          <label>
+            <span class="SelectLabel">Font Size</span>
+            <select
+              name="viewConfig"
+              id="viewConfig"
+              on:change={event => fontSize.save(event.target.value)}>
 
-            <option
-              value="xx-small"
-              selected={$fontSize === 'xx-small'}
-              aria-label="Tiny">
-              Tiny
-            </option>
-            <option
-              value="x-small"
-              selected={$fontSize === 'x-small'}
-              aria-label="Extra Small">
-              Extra Small
-            </option>
-            <option
-              value="small"
-              selected={$fontSize === 'small'}
-              aria-label="Small">
-              Small
-            </option>
-            <option
-              value="regular"
-              selected={$fontSize === 'regular'}
-              aria-label="Regular">
-              Regular
-            </option>
-            <option
-              value="bigger"
-              selected={$fontSize === 'bigger'}
-              aria-label="Bigger">
-              Bigger
-            </option>
-            <option
-              value="large"
-              selected={$fontSize === 'large'}
-              aria-label="Large">
-              Large
-            </option>
-            <option
-              value="x-large"
-              selected={$fontSize === 'x-large'}
-              aria-label="Extra Large">
-              Extra Large
-            </option>
-          </select>
-        </label>
-      </span>
-      <span slot="right-button">
-        {#if $configuringReader}
-          <button
-            data-close-modal
-            class="TextButton"
-            on:click={event => {
-              configuringReader.update(state => !state);
-            }}>
-            Done
-          </button>
-        {/if}
-      </span>
-    </Toolbar>
-  {/if}
-  <div
-    class="BookBody"
-    bind:this={bookBody}
-    data-current={$currentLocation.location}>
-    <!-- This needs to be first positioned using the grid, then made sticky -->
-    <Progress
-      chapters={$docStore.readingOrder}
-      current={$chapterStore.index}
-      {width}
-      on:toggle-sidebar={() => {
-        sidebar = !sidebar;
-        sidebargrid = !sidebargrid;
-      }} />
-    <!-- Should have all chapters appear, they should get values from stores and only use props for chapter assignments. Only when props match store is the chapter rendered -->
-    {#each $docStore.readingOrder as chapter, index}
-      <Chapter
-        on:current={handleCurrent}
-        on:appearing={handleAppearing}
-        chapterIndex={index}
-        {chapter} />
-    {/each}
-
-    {#if $navigation}
-      <Navbar navigation={$navigation}>
-        {#if selectionRange}
-          <Button
-            click={() => {
-              handleHighlight(selectionRange, bookBody, $chapterStore);
-            }}>
-            Highlight
-          </Button>
-        {/if}
-      </Navbar>
-    {:else}
-      <Navbar />
+              <option
+                value="xx-small"
+                selected={$fontSize === 'xx-small'}
+                aria-label="Tiny">
+                Tiny
+              </option>
+              <option
+                value="x-small"
+                selected={$fontSize === 'x-small'}
+                aria-label="Extra Small">
+                Extra Small
+              </option>
+              <option
+                value="small"
+                selected={$fontSize === 'small'}
+                aria-label="Small">
+                Small
+              </option>
+              <option
+                value="regular"
+                selected={$fontSize === 'regular'}
+                aria-label="Regular">
+                Regular
+              </option>
+              <option
+                value="bigger"
+                selected={$fontSize === 'bigger'}
+                aria-label="Bigger">
+                Bigger
+              </option>
+              <option
+                value="large"
+                selected={$fontSize === 'large'}
+                aria-label="Large">
+                Large
+              </option>
+              <option
+                value="x-large"
+                selected={$fontSize === 'x-large'}
+                aria-label="Extra Large">
+                Extra Large
+              </option>
+            </select>
+          </label>
+        </span>
+        <span slot="right-button">
+          {#if $configuringReader}
+            <button
+              data-close-modal
+              class="TextButton"
+              on:click={event => {
+                configuringReader.update(state => !state);
+              }}>
+              Done
+            </button>
+          {/if}
+        </span>
+      </Toolbar>
     {/if}
-  </div>
+    <div
+      class="BookBody"
+      bind:this={bookBody}
+      data-current={$currentLocation.location}>
+      <!-- This needs to be first positioned using the grid, then made sticky -->
+      <Progress
+        chapters={$docStore.readingOrder}
+        current={$chapterStore.index}
+        {width}
+        on:toggle-sidebar={() => {
+          sidebar = !sidebar;
+          sidebargrid = !sidebargrid;
+        }} />
+      <!-- Should have all chapters appear, they should get values from stores and only use props for chapter assignments. Only when props match store is the chapter rendered -->
+      {#each $docStore.readingOrder as chapter, index}
+        <Chapter
+          on:current={handleCurrent}
+          on:appearing={handleAppearing}
+          chapterIndex={index}
+          {chapter} />
+      {/each}
+
+      {#if $navigation}
+        <Navbar navigation={$navigation}>
+          {#if selectionRange}
+            <Button
+              click={() => {
+                handleHighlight(selectionRange, bookBody, $chapterStore, $chapterTitle, $notesCollection);
+              }}>
+              Highlight
+            </Button>
+          {/if}
+        </Navbar>
+      {:else}
+        <Navbar />
+      {/if}
+    </div>
   {/await}
 {/if}

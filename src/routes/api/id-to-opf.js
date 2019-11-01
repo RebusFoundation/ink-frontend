@@ -1,5 +1,5 @@
 // import * as fs from "fs";
-import { parseOPF } from "../../api/opf-to-metadata.js";
+// import { parseOPF } from "../../api/opf-to-metadata.js";
 import got from "got";
 import { normalise } from "../../api/normalise-publication.js";
 
@@ -18,7 +18,7 @@ export async function get(req, res, next) {
     // const opf = book.resources.find(
     //   item => item.encodingFormat === "application/oebps-package+xml"
     // );
-    return res.json(normalise(book));
+    return res.json(book);
     // if (true) {
     // } else {
     //   const url = new URL(opf.url, process.env.API_SERVER);
@@ -53,7 +53,7 @@ export async function get(req, res, next) {
     // }
   } catch (err) {
     console.log(err);
-    res.status(500);
+    res.status(err.statusCode || 500);
     res.json(JSON.stringify(err));
   }
 }

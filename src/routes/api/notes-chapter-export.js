@@ -1,16 +1,13 @@
 import got from "got";
-import querystring from "querystring";
+import slugify from "slugify";
+// import * as fs from "fs";
 export async function get(req, res, next) {
   if (req.user) {
     const notesEndpoint = `${req.user.profile.id}/notes`;
-    const { page, path } = req.query;
-    const query = {
-      page,
-      document: path
-    }
+    const { page, path, title = "", chapter = "" } = req.query;
     try {
       const url = new URL(
-        `${notesEndpoint}?${querystring.stringify(query)}`,
+        `${notesEndpoint}?limit=100&page=${page}&document=${path}`,
         process.env.API_SERVER
       );
       const response = await got.get(url.href, {
@@ -37,10 +34,33 @@ export async function get(req, res, next) {
           }
         });
       }
-      return res.json(response.body);
+      res.set('Content-Disposition', `attachment; filename="${slugify(title)}-${slugify(chapter)}-notes.html"`)
+      return res.send(renderNotes(response.body, title, chapter));
     } catch (err) {
       console.log(err);
       return res.sendStatus(err.statusCode || 500);
     }
   }
+}
+
+function renderNotes ({items}, title = "", chapter = "") {
+  const htmlNotes = items.map(item => {
+    return `<div class="Note">${item.content}
+    <div class="Comment">${item.json.comment || ""}</div>
+  </div>`
+  })
+  return `<!doctype html>
+  <html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width,initial-scale=1.0'>
+    <title>Notes for ${title}</title>
+  </head>
+  <body id="body">
+  <h1>Notes for ${title}</h1>
+  ${chapter ? `<h2>${chapter}</h2>` : ""}
+  ${htmlNotes.join('\n')}
+  </body>
+  </html>
+  `
 }

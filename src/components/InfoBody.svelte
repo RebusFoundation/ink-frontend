@@ -3,7 +3,7 @@
   import TextButton from "./TextButton.svelte";
   import { collection } from "../api/collection.js";
   import { fly, fade } from "svelte/transition";
-  import CollectionCheckbox from './CollectionCheckbox.svelte'
+  import CollectionCheckbox from "./CollectionCheckbox.svelte";
   import { stores } from "../stores";
   const { collections } = stores();
   export let side;
@@ -29,8 +29,7 @@
     color: var(--medium);
     font-weight: 600;
   }
-  ol,
-  .return {
+  ol {
     margin: 1rem auto;
     min-width: 250px;
     max-width: 450px;
@@ -54,11 +53,6 @@
   }
   ol li {
     list-style: none;
-  }
-  ol a.current {
-    border-left: 5px solid var(--rc-darker);
-    padding-left: calc(1rem - 6px);
-    font-weight: 600;
   }
   .Collections {
     font-size: 1rem;
@@ -147,62 +141,62 @@
     out:fly={{ duration: 250, x: 100 }}>
     {#if modal}
       <h1>{infoBook.name || ''}</h1>
-      {:else}
-    <div class="CollectionBar">
-      <a
-        href={closeURL}
-        class="Closer"
-        aria-label="Close sidebar"
-        sapper-noscroll>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="square"
-          stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-      </a>
-      <h2>{infoBook.name || ''}</h2>
-      <span />
-    </div>
-    <div class="Cover">
-      <img src={infoBook.cover} alt={infoBook.name} />
-    </div>
-    {#if infoBook.author}
-      <div class="Attributions">
-        {#each infoBook.author as attribution}
-          <p class="InfoAttribution">{attribution.name}</p>
-        {:else}
-          <p class="InfoAttribution">No author</p>
-        {/each}
-        {#each infoBook.editor as attribution}
-          <p class="InfoAttribution">{attribution.name} (editor)</p>
-        {:else}
-          <p class="InfoAttribution">No editor</p>
-        {/each}
-        {#each infoBook.translator as attribution}
-          <p class="InfoAttribution">{attribution.name} (translator)</p>
-        {:else}
-          <p class="InfoAttribution">No translator</p>
-        {/each}
-        {#each infoBook.contributor as attribution}
-          <p class="InfoAttribution">{attribution.name} (contributor)</p>
-        {:else}
-          <p class="InfoAttribution">No contributor</p>
-        {/each}
-        {#each infoBook.illustrator as attribution}
-          <p class="InfoAttribution">{attribution.name} (illustrator)</p>
-        {:else}
-          <p class="InfoAttribution">No illustrator</p>
-        {/each}
+    {:else}
+      <div class="CollectionBar">
+        <a
+          href={closeURL}
+          class="Closer"
+          aria-label="Close sidebar"
+          sapper-noscroll>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="square"
+            stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </a>
+        <h2>{infoBook.name || ''}</h2>
+        <span />
       </div>
-    {/if}
+      <div class="Cover">
+        <img src={infoBook.cover} alt={infoBook.name} />
+      </div>
+      {#if infoBook.author}
+        <div class="Attributions">
+          {#each infoBook.author as attribution}
+            <p class="InfoAttribution">{attribution.name}</p>
+          {:else}
+            <p class="InfoAttribution">No author</p>
+          {/each}
+          {#each infoBook.editor as attribution}
+            <p class="InfoAttribution">{attribution.name} (editor)</p>
+          {:else}
+            <p class="InfoAttribution">No editor</p>
+          {/each}
+          {#each infoBook.translator as attribution}
+            <p class="InfoAttribution">{attribution.name} (translator)</p>
+          {:else}
+            <p class="InfoAttribution">No translator</p>
+          {/each}
+          {#each infoBook.contributor as attribution}
+            <p class="InfoAttribution">{attribution.name} (contributor)</p>
+          {:else}
+            <p class="InfoAttribution">No contributor</p>
+          {/each}
+          {#each infoBook.illustrator as attribution}
+            <p class="InfoAttribution">{attribution.name} (illustrator)</p>
+          {:else}
+            <p class="InfoAttribution">No illustrator</p>
+          {/each}
+        </div>
+      {/if}
     {/if}
     <ol>
       {#if infoBook.json.epubVersion}
@@ -251,7 +245,10 @@
       <ol class="CollectionsList">
         {#each $collections as tag}
           <li>
-            <CollectionCheckbox {tag} tags={infoBook.tags.map(tag => tag.id)} {handleCollection} />
+            <CollectionCheckbox
+              {tag}
+              tags={infoBook.tags.map(tag => tag.id)}
+              {handleCollection} />
           </li>
         {/each}
       </ol>

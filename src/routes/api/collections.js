@@ -56,6 +56,7 @@ export async function get(req, res, next) {
           if (reverse !== "false") {
             query.reverse = reverse;
           }
+          delete query.stack
           url = `${req.user.profile.id}/notes?${querystring.encode(query)}`;
         }
       }

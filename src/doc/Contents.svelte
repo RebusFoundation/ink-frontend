@@ -2,9 +2,10 @@
   import ContentsItem from "./ContentsItem.svelte";
   export let contents;
   export let book;
+  export let chapter;
   let current;
-  $: if (book && book.position && book.position.path) {
-    current = book.position.path;
+  $: if (chapter) {
+    current = new URL(chapter.url, window.location.href).pathname 
   }
 </script>
 
@@ -31,11 +32,12 @@
     color: var(--dark);
   } */
 </style>
-  <h1 class="ContentsHeading">{book.name}</h1>
-  <ol class="Contents">
+
+<h1 class="ContentsHeading">{book.name}</h1>
+<ol class="Contents">
   {#if contents.children}
     {#each contents.children as item}
       <ContentsItem {item} {current} />
     {/each}
   {/if}
-  </ol>
+</ol>

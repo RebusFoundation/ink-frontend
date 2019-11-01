@@ -21,7 +21,16 @@ export function stores() {
     update = true;
   }
   if (update && !updating) updateCollections();
-  return { ...book, ...layout, ...doc, collections, recent, note, jobs, notesEditor };
+  return {
+    ...book,
+    ...layout,
+    ...doc,
+    collections,
+    recent,
+    note,
+    jobs,
+    notesEditor
+  };
 }
 
 function updateCollections() {

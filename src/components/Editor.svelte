@@ -12,7 +12,21 @@
   };
   const commentConfig = {
     KEEP_CONTENT: false,
-    ALLOWED_TAGS: ["p", "i", "em", "strong", "a", "b", "ul", "li", "ol", "blockquote", "img", "pre", "code"],
+    ALLOWED_TAGS: [
+      "p",
+      "i",
+      "em",
+      "strong",
+      "a",
+      "b",
+      "ul",
+      "li",
+      "ol",
+      "blockquote",
+      "img",
+      "pre",
+      "code"
+    ],
     FORBID_ATTR: ["style"]
   };
   export let note;

@@ -32,6 +32,6 @@
   <Collections {collection} modal={false} />
 {:else if sidebar === 'notes'}
   <NotesSidebar modal={false} />
-  {:else}
-    <div class="empty"></div>
+{:else}
+  <div class="empty" />
 {/if}

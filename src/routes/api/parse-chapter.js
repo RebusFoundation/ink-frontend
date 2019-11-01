@@ -11,11 +11,12 @@ export async function get(req, res, next) {
       const url = new URL(file, process.env.API_SERVER);
       if (req.firebase) {
         const bucket = req.firebase.storage().bucket();
-        const file = bucket.file(encode(url.href))
-        const exists = await file.exists()
+        const file = bucket.file(encode(url.href));
+        const exists = await file.exists();
         if (exists[0]) {
           res.type("json");
-          file.createReadStream()
+          file
+            .createReadStream()
             .on("error", err => console.error(err))
             .pipe(res);
         } else {
@@ -40,11 +41,18 @@ export async function get(req, res, next) {
           } else {
             res.sendStatus(404);
           }
-          const chapter = await chapterToJSON(body, url.href, contentType, index);
+          const chapter = await chapterToJSON(
+            body,
+            url.href,
+            contentType,
+            index
+          );
           await file.save(JSON.stringify(chapter), {
             metadata: {
-              contentType: 'image/jpeg'
-            }, resumable: false});
+              contentType: "image/jpeg"
+            },
+            resumable: false
+          });
           return res.json(chapter);
         }
       }

@@ -24,6 +24,7 @@
     align-items: center;
     height: 32px;
     grid-area: navbar;
+    /* box-shadow: 1px 1px 4px 0 rgba(133, 133, 133, 0.1); */
   }
   .Navbar-link {
     font-size: 1.25rem;

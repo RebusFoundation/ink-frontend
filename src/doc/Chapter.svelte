@@ -1,6 +1,6 @@
 <script>
   import { onMount, onDestroy, createEventDispatcher } from "svelte";
-  import {highlightNotes} from '../routes/doc/[id]/_handleHighlight.js'
+  import { highlightNotes } from "../routes/doc/[id]/_handleHighlight.js";
   import { stores } from "../stores";
   import { fade } from "svelte/transition";
   import ChapterBody from "./ChapterBody.svelte";
@@ -71,7 +71,17 @@
       locationObserver.observe(element);
     });
   }
-  $: if (chapterElement && $notes.items && $notes.chapter === $chapterStore.url) {
+  $: if (
+    chapterElement &&
+    $notes.items &&
+    $notes.chapter === $chapterStore.url
+  ) {
+    document
+      .querySelectorAll(`.Chapter mark[data-note-id]`)
+      .forEach(highlight => highlight.replaceWith(...highlight.childNodes));
+    document
+      .querySelectorAll(`.Chapter .Highlight-return-link`)
+      .forEach(arrow => arrow.parentElement.removeChild(arrow));
     highlightNotes(chapterElement, $notes);
   }
 </script>
@@ -91,12 +101,11 @@
     padding: 0;
     padding-top: 5vh;
     display: grid;
-    grid-template-columns:
-      minmax(var(--reader-left-margin), 1fr) minmax(
+    grid-template-columns: minmax(0, 1fr) minmax(
         var(--reader-min-column-width),
         var(--reader-max-column-width)
       )
-      minmax(var(--reader-left-margin), 1fr);
+      minmax(0, 1fr);
     grid-template-areas: "leftmargin maintext rightmargin";
     grid-row-gap: var(--reader-paragraph-spacing);
     min-height: 100vh;

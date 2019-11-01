@@ -1,12 +1,14 @@
 <script>
   import { onMount, tick } from "svelte";
   import { collection as setCollection } from "../api/collection.js";
+  import { preRender } from "../routes/doc/[id]/_utils.js";
   import { stores } from "../stores";
   const { collections, recent, jobs } = stores();
   export let job;
   export let collection;
+  let publication;
   onMount(() => {
-    check(testJob, 100000, 2000);
+    check(testJob, 300000, 3000);
   });
   async function check(fn, timeout, interval) {
     const endTime = Number(new Date()) + (timeout || 2000);
@@ -30,22 +32,24 @@
       )}&publication=true`,
       { credentials: "include" }
     );
-    const publication = await publicationResponse.json();
+    publication = await publicationResponse.json();
     recent.update(recentStore => {
       recentStore.items = [publication].concat(recentStore.items);
       return recentStore;
     });
-    if (!collection || collection === "all") return;
     jobs.update(list => {
       const index = list.map(item => item.id).indexOf(job.id);
       list[index] = job;
       return list;
     });
-    return setCollection(
-      tag,
-      { id: `/publication-${job.publicationId}/` },
-      true
-    );
+    if (collection && collection !== "all") {
+      await setCollection(
+        tag,
+        { id: `/publication-${job.publicationId}/` },
+        true
+      );
+    }
+    return preRender(publication);
   }
   async function testJob() {
     try {
@@ -68,5 +72,5 @@
 <li>
   {#if job.error}
     Error processing epub
-  {:else}&nbsp;{/if}
+  {:else if publication}{publication.name} imported{:else}&nbsp;{/if}
 </li>

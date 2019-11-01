@@ -3,10 +3,10 @@ import seek from "dom-seek";
 import { create } from "../../../api/create.js";
 import { encode } from "universal-base64url";
 // import { goto } from "@sapper/app";
-import {stores} from '../../../stores';
-const {updateNotes} = stores();
+import { stores } from "../../../stores";
+const { updateNotes } = stores();
 
-export function handleHighlight(range, root, chapter) {
+export function handleHighlight(range, root, chapter, chapterTitle, notesCollection) {
   if (range && root) {
     const selector = textQuote.fromRange(root, range);
     let startLocation;
@@ -28,11 +28,11 @@ export function handleHighlight(range, root, chapter) {
     }
     let html = serializeRange(range);
     let content = `<blockquote data-original-quote>${html}</blockquote>`;
-    let common = range.commonAncestorContainer
+    let common = range.commonAncestorContainer;
     if (!common.closest) {
-      common = common.parentElement.closest("[data-location]")
+      common = common.parentElement.closest("[data-location]");
     } else {
-      common = common.closest("[data-location]")
+      common = common.closest("[data-location]");
     }
     const startOffset = common.textContent.indexOf(selector.exact);
     const note = {
@@ -43,7 +43,8 @@ export function handleHighlight(range, root, chapter) {
       json: {
         startOffset,
         startLocation,
-        endLocation
+        endLocation,
+        chapterTitle
       },
       content
     };
@@ -66,13 +67,21 @@ export function handleHighlight(range, root, chapter) {
     highlightNote(selector, root, tempId, note);
     console.log(`${startLocation}–${endLocation}`);
     document.getSelection().collapse(root, 0);
+    if (notesCollection) {
+      note.json.collection = notesCollection
+    }
     return create(note).then(activity => {
       document.querySelectorAll(`[data-note-id="${tempId}"]`).forEach(node => {
         node.dataset.noteId = activity.object.id;
       });
-      document.getElementById("highlight-" + encode(tempId)).id = "highlight-" + encode(activity.object.id)
-      updateNotes.set(activity.object.id)
-      document.querySelector(`[href="${window.location.pathname}#note-${encode(tempId)}"]`).href = `[href="${window.location.pathname}#note-${encode(activity.object.id)}"]`
+      document.getElementById("highlight-" + encode(tempId)).id =
+        "highlight-" + encode(activity.object.id);
+      updateNotes.set(activity.object.id);
+      document.querySelector(
+        `[href="${window.location.pathname}#note-${encode(tempId)}"]`
+      ).href = `[href="${window.location.pathname}#note-${encode(
+        activity.object.id
+      )}"]`;
     });
   }
 }
@@ -110,7 +119,7 @@ function highlightNote(selector, root, id, note) {
         highlight.classList.add("Commented");
       }
       if (note && note.json && note.json.label) {
-        highlight.dataset.highlightLabel = note.json.label
+        highlight.dataset.highlightLabel = note.json.label;
       }
       highlight.root = root;
       // highlight.addEventListener('click', event => {
@@ -122,27 +131,27 @@ function highlightNote(selector, root, id, note) {
       highlight.setAttribute("sapper-noscroll", "true");
       node.parentNode.replaceChild(highlight, node);
       highlight.appendChild(node);
-      if (i === (nodes.length - 1)) {
-        const span = document.createElement("span")
-        span.id = "highlight-" + encode(id)
-        span.classList.add('Highlight-anchor')
-        highlight.insertAdjacentElement('afterbegin', span)
+      if (i === nodes.length - 1) {
+        const span = document.createElement("span");
+        span.id = "highlight-" + encode(id);
+        span.classList.add("Highlight-anchor");
+        highlight.insertAdjacentElement("afterbegin", span);
       }
       if (i === 0) {
-        const a = document.createElement("a")
-        a.href = `${window.location.pathname}#note-${encode(id)}`
-        a.classList.add('Highlight-return-link')
-        a.setAttribute('sapper-noscroll', '')
-        a.addEventListener('click', sidebarScroll)
-        a.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`
-        a.setAttribute('aria-label', 'Go to note in sidebar')
-        highlight.insertAdjacentElement('afterend', a)
+        const a = document.createElement("a");
+        a.href = `${window.location.pathname}#note-${encode(id)}`;
+        a.classList.add("Highlight-return-link");
+        a.setAttribute("sapper-noscroll", "");
+        a.addEventListener("click", sidebarScroll);
+        a.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
+        a.setAttribute("aria-label", "Go to note in sidebar");
+        highlight.insertAdjacentElement("afterend", a);
       }
     }
   }
 }
 
-function sidebarScroll (event) {
+function sidebarScroll(event) {
   // Based on https://github.com/visionmedia/page.js/blob/master/index.js
   // MIT License
   if ((event.which === null ? event.button : event.which) !== 1) return;
@@ -150,9 +159,9 @@ function sidebarScroll (event) {
   if (event.defaultPrevented) return;
   event.preventDefault();
   event.stopPropagation();
-  const id = new URL(event.currentTarget.href).hash.replace('#', '')
-  const element = document.getElementById(id)
-  element.scrollIntoView({behavior: 'smooth'})
+  const id = new URL(event.currentTarget.href).hash.replace("#", "");
+  const element = document.getElementById(id);
+  element.scrollIntoView({ behavior: "smooth" });
 }
 
 // function setNoteURL(id) {

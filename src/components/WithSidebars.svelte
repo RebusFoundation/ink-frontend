@@ -21,6 +21,10 @@
     display: none;
     background-color: var(--sidebar-background-color);
   }
+  .center {
+    box-shadow: 0px 0px 2px 0px rgba(33, 33, 33, 0.1);
+    z-index: 1;
+  }
   @media (min-width: 1024px) {
     .Main.sidebar {
       display: grid;
@@ -48,7 +52,10 @@
   @media (min-width: 1281px) {
     .Main.right-sidebar {
       display: grid;
-      grid-template-columns: minmax(min-content, 0.5fr) 1fr minmax(min-content, 0.75fr);
+      grid-template-columns: minmax(min-content, 0.5fr) 1fr minmax(
+          min-content,
+          0.75fr
+        );
       grid-template-areas:
         "sidebar body right-sidebar"
         "sidebar body right-sidebar";
@@ -72,6 +79,14 @@
     background-color: var(--reader-sidebar-background);
     background-color: var(--sidebar-background-color);
   }
+  .SignOut {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 0.5rem;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    text-decoration: none;
+  }
 </style>
 
 <svelte:window bind:innerWidth={width} />
@@ -81,10 +96,11 @@
   class:right-sidebar={rightsidebar}
   class:show-right-sidebar={showRightSidebar}>
   {#if sidebar}
-    <div class="Sidebar">
+    <div class="Sidebar" data-no-highlight>
       <slot name="left-sidebar">
         <!-- optional fallback -->
       </slot>
+      <a href="/logout" class="SignOut">Sign Out</a>
     </div>
   {/if}
   <div class="center">
@@ -168,7 +184,7 @@
     <slot />
   </div>
   {#if showRightSidebar}
-    <div class="RightSidebar">
+    <div class="RightSidebar" data-no-highlight>
       <slot name="right-sidebar">
         <!-- optional fallback -->
       </slot>

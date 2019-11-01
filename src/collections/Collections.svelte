@@ -78,7 +78,6 @@
   $: if (input) {
     input.focus();
   }
-  $: console.log(current);
 </script>
 
 <style>
@@ -303,7 +302,8 @@
         class:item={true}
         href="/"
         data-close-modal
-        class:current={current === 'Recent'}>
+        class:current={current === 'Recent'}
+        aria-current={current === 'Recent' ? "page" : false}>
         <span class="label">Recent</span>
       </a>
     </li>
@@ -312,7 +312,8 @@
         class:item={true}
         href="/collections/all"
         data-close-modal
-        class:current={current === 'all'}>
+        class:current={current === 'all'}
+        aria-current={current === 'all' ? "page" : null}>
         <span class="label">All</span>
       </a>
     </li>
@@ -325,7 +326,8 @@
             class:item={true}
             href="/collections/{encodeURIComponent(tag.name)}"
             data-close-modal
-            class:current={current === tag.name}>
+            class:current={current === tag.name}
+        aria-current={current === tag.name ? "page" : null}>
             <span class="label">{tag.name}</span>
           </a>
         </li>
@@ -339,7 +341,8 @@
             class:item={true}
             href="/collections/{encodeURIComponent(tag.name)}"
             data-close-modal
-            class:current={current === tag.name}>
+            class:current={current === tag.name}
+        aria-current={current === tag.name ? "page" : null}>
             <span class="label">{tag.name}</span>
           </a>
         </li>

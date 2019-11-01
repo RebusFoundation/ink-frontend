@@ -3,14 +3,14 @@
   import TextButton from "./TextButton.svelte";
   import { collection } from "../api/collection.js";
   import { stores } from "../stores";
-  const { infoBook, currentInfoBook, collections } = stores();
+  const { docStore, currentInfoBook, collections } = stores();
   export let modal;
   export let sidebar = false;
   export let history = false;
   export let side;
   let book = { navigation: { current: {} }, json: { epubVersion: "2.0" } };
-  $: if ($infoBook.id && $infoBook.id !== book.id) {
-    updateBook($infoBook.id);
+  $: if ($docStore.id && $docStore.id !== book.id) {
+    updateBook($docStore.id);
   }
   let bookTags = [];
   $: if (book.tags) {
@@ -35,7 +35,7 @@
   url.search = search.toString();
   let closeURL = url.href;
   function handleCollection(tag, input) {
-    collection(tag, $infoBook, input.checked);
+    collection(tag, $docStore, input.checked);
   }
 </script>
 
@@ -117,9 +117,6 @@
     justify-content: flex-start;
     padding: 0.25rem 1rem;
   }
-  .CollectionsList label.checked {
-    font-weight: 600;
-  }
   .CollectionsList label:hover {
     background-color: var(--hover);
     color: var(--light);
@@ -157,16 +154,6 @@
       transform: rotate(-45deg);
     }
   }
-  .CollectionBar {
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    background-color: var(--sidebar-background-color);
-    margin: 0 0 0.5rem;
-  }
   h2 {
     text-align: center;
     font-size: 1rem;
@@ -175,12 +162,6 @@
     font-weight: 600;
     font-size: 0.75rem;
     text-transform: uppercase;
-  }
-  .Cover {
-    text-align: center;
-  }
-  .Cover img {
-    height: 150px;
   }
   .wrapper {
     min-width: 300px;
@@ -207,7 +188,7 @@
       </a>
     {/if}
     {#if modal}
-      <h1>{$infoBook.name || ''}</h1>
+      <h1>{$docStore.name || ''}</h1>
     {/if}
     <ol>
       {#if book.json.epubVersion}

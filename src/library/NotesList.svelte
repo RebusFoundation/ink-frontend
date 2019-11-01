@@ -19,9 +19,9 @@
 
 <!-- markup (zero or more items) goes here -->
 <div class="NotesList">
-    {#each notes as note}
-      <div class="Note">
-        <Highlight {note} {current} {collection} {modal} />
-      </div>
-    {/each}
+  {#each notes as note}
+    <div class="Note">
+      <Highlight {note} {current} {collection} {modal} />
+    </div>
+  {/each}
 </div>

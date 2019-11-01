@@ -128,6 +128,7 @@
     background-repeat: no-repeat, repeat;
     background-position: right 0.7em top 50%, 0 0;
     background-size: 1em auto, 100%;
+    box-shadow: 1px 2px 2px 0 rgba(133, 133, 133, 0.1);
   }
   select::-ms-expand {
     display: none;

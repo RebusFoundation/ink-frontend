@@ -24,24 +24,34 @@ export const contents = derived(docStore, ($docStore, set) => {
     set({});
   }
 });
-export const notes = derived([chapterStore, updateNotes], ([$chapterStore, $updateNotes], set) => {
-  try {
-    if ($chapterStore.url && $updateNotes) {
-      window
-        .fetch(`/api/notes?path=${encodeURIComponent($chapterStore.url)}`)
-        .then(response => response.json())
-        .then(notesData => {
-          notesData.chapter = $chapterStore.url
-          return set(notesData)
-        });
-    } else {
+
+export const notesCollection = writable("all");
+
+export const notes = derived(
+  [chapterStore, updateNotes, notesCollection],
+  ([$chapterStore, $updateNotes, $notesCollection], set) => {
+    try {
+      if ($chapterStore.url && $updateNotes) {
+        const url = `/api/notes?path=${encodeURIComponent($chapterStore.url)}`
+        window
+          .fetch(url)
+          .then(response => response.json())
+          .then(notesData => {
+            notesData.chapter = $chapterStore.url;
+            if ($notesCollection !== "all") {
+              notesData.items = notesData.items.filter(item => item.json.collection === $notesCollection)
+            }
+            return set(notesData);
+          });
+      } else {
+        set({});
+      }
+    } catch (err) {
       set({});
+      console.error(err);
     }
-  } catch (err) {
-    set({});
-    console.error(err);
   }
-});
+);
 
 export const navigation = derived(
   [docStore, chapterStore],
@@ -62,7 +72,10 @@ export const chapterTitle = derived(
   [chapterStore, contents],
   ([$chapterStore, $contents]) => {
     function findTitle(currentTitle, entry) {
-      const path = new URL(entry.url, "http://example.com/").pathname.replace('/doc', '');
+      const path = new URL(entry.url, "http://example.com/").pathname.replace(
+        "/doc",
+        ""
+      );
       if (currentTitle !== "") {
         return currentTitle;
       } else if ($chapterStore.url.includes(path)) {

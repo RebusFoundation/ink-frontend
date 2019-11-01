@@ -2,7 +2,7 @@
   // your script goes here
   import { onMount } from "svelte";
   export let upload = files => console.log(files);
-  let form
+  let form;
   onMount(() => {
     if (!document.getElementById("import-pdf-cover-page")) {
       const canvas = document.createElement("canvas");

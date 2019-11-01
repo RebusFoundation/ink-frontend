@@ -3,11 +3,14 @@
   export async function preload(page, session) {
     try {
       const [collection, type = "library"] = page.params.collection;
-      const {
+      let {
         orderBy = "datePublished",
         reverse = "false",
         layout = "list"
       } = page.query;
+      if (type === "notes" && orderBy === "datePublished") {
+        orderBy = "created"
+      }
       let books = { items: [] };
       if (session.user) {
         books = await this.fetch(
@@ -27,6 +30,9 @@
       if (page.query.item) {
         sidebar = decode(page.query.item);
       }
+      if (collection !== "all" && type === "notes") {
+        books.items = books.items.filter(item => item.json.collection === collection)
+      }
       return {
         items: books.items,
         collection,
@@ -35,7 +41,9 @@
         hideLoadMore,
         sidebar,
         layout,
-        type
+        type,
+        orderBy,
+        reverse
       };
     } catch (err) {
       console.log(err);
@@ -53,6 +61,7 @@
   import NotesList from "../../library/NotesList.svelte";
   import CollectionTabs from "../../library/CollectionTabs.svelte";
   import InfoActions from "../../components/InfoActions.svelte";
+  import NotesBar from "../../doc/NotesBar.svelte";
   import * as sapper from "@sapper/app";
   import { profile } from "../_profile.js";
   import { open } from "../../actions/modal.js";
@@ -63,19 +72,35 @@
   export let items;
   export let collection;
   export let selected;
-  export let page;
   export let hideLoadMore = false;
   export let layout;
   export let type;
   export let sidebar;
+  export let page;
+  export let orderBy;
+  export let reverse;
   $: title.set(collection);
-  $: console.log(type);
   let notes;
   let library;
   const search = writable(window.location.search);
   $: if ($search) {
-    notes = `/collections/${collection}/notes${$search}`;
-    library = `/collections/${collection}${$search}`;
+    const query = new window.URLSearchParams(window.location.search);
+      query.delete("item")
+    if (type === "notes") {
+      if (orderBy === 'created') {
+        query.set("orderBy", "datePublished")
+      }
+      query.delete("updated")
+      notes = `/collections/${collection}/notes${window.location.search}`;
+      library = `/collections/${collection}?${query.toString()}`;
+    } else {
+      if (orderBy === 'datePublished') {
+        query.set("orderBy", "created")
+      }
+      query.delete("title")
+      notes = `/collections/${collection}/notes?${query.toString()}`;
+      library = `/collections/${collection}${window.location.search}`; 
+    }
   } else {
     notes = `/collections/${collection}/notes`;
     library = `/collections/${collection}`;
@@ -131,15 +156,9 @@
     ];
   }
 
-  let order = {
-    orderBy: "",
-    reverse: "",
-    page: 1
-  };
   function onSelect(event) {
     const value = event.target.value.split("-");
     const query = new window.URLSearchParams(window.location.search);
-    query.set("noHistory", "true");
     if (value[0] === "datePublished") {
       query.delete("orderBy");
       query.delete("reverse");
@@ -150,16 +169,10 @@
         query.set("page", 1);
       }
     } else {
-      order = {
-        orderBy: `?orderBy=${value[0]}`,
-        reverse: "",
-        page: 1
-      };
       query.set("orderBy", value[0]);
       query.delete("reverse");
       query.set("page", 1);
       if (value[1]) {
-        order.reverse = "&reverse=true";
         query.set("reverse", "true");
       }
     }
@@ -176,37 +189,42 @@
   }
   async function check() {
     const endTime = Number(new Date()) + 1000 * 60 * 10;
-    const interval = 1000 * 10;
+    const interval = 1000 * 5;
     while (true) {
       try {
         await loadMore(true);
-        if (Number(new Date()) < endTime) {
-          await new Promise(resolve => setTimeout(resolve, interval));
-        }
+        await new Promise(resolve => setTimeout(resolve, interval));
       } catch (err) {
+        console.error(err);
         return err;
       }
     }
   }
   async function loadMore(prepend) {
     try {
-      let page;
       if (prepend) {
         page = 1;
       } else {
-        page = order.page + 1;
-        order.page = order.page + 1;
+        page = page + 1;
       }
+      const query = new window.URLSearchParams(window.location.search);
+      query.set("page", page);
+      query.set("orderBy", orderBy);
+      query.set("reverse", reverse);
+      query.set("collection", collection);
+      query.set("type", type);
       const libraryAdditions = await window
         .fetch(
-          `/api/collections?collection=${collection}&page=${page}${order.orderBy &&
-            order.orderBy.slice(1)}${order.reverse}&type=${type}`,
+          `/api/collections?${query.toString()}`,
           {
             credentials: "include"
           }
         )
         .then(response => response.json());
       const itemIds = items.map(item => item.id);
+      if (collection !== "all" && type === "notes") {
+        libraryAdditions.items = libraryAdditions.items.filter(item => item.json.collection === collection)
+      }
       const additions = libraryAdditions.items.filter(
         item => itemIds.indexOf(item.id) === -1
       );
@@ -282,6 +300,7 @@
     background-repeat: no-repeat, repeat;
     background-position: right 0.7em top 50%, 0 0;
     background-size: 1em auto, 100%;
+    box-shadow: 1px 2px 2px 0 rgba(133, 133, 133, 0.1);
   }
   select::-ms-expand {
     display: none;
@@ -307,6 +326,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    top: 32px;
+    background-color: var(--main-background-color);
+    z-index: 1;
+    font-size: 0.85rem;
+    color: var(--medium);
+    padding: 0.5rem;
   }
 </style>
 
@@ -320,6 +346,10 @@
   out:fly={{ y: 200, duration: 250 }}>
   <div class="ViewConfig">
     <CollectionTabs {collection} current={type} {notes} {library} />
+
+
+    <a href="{`/api/note-collection-export?collection=${collection}`}" aria-label="Download HTML notes for this book" download><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="round"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 9l-5 5-5-5M12 12.8V2.5"/></svg></a>
+
     <div class="select">
       Ordered By
       <label>
@@ -362,4 +392,7 @@
       Load More...
     </Button>
   </span>
+  {#if type === "notes"}
+    <NotesBar collection={true} />
+  {/if}
 </div>

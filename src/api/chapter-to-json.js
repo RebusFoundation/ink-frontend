@@ -116,9 +116,12 @@ export async function chapterToJSON(
       addCSSRules(output, node.sheet.cssRules);
       node.textContent = output.join("\n");
     } else if (tagLocations.indexOf(data.tagName) !== -1) {
-      if (data.tagName === "div" && !node.querySelector(tagLocations.join(','))) {
+      if (
+        data.tagName === "div" &&
+        !node.querySelector(tagLocations.join(","))
+      ) {
         node.dataset.location = locations++;
-      } else if (!node.closest('[data-location]') && data.tagName !== "div") {
+      } else if (!node.closest("[data-location]") && data.tagName !== "div") {
         node.dataset.location = locations++;
       }
     }

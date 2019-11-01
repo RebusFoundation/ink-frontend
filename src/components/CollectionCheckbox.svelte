@@ -2,7 +2,7 @@
   export let tag;
   export let tags;
   export let handleCollection;
-  $: console.log(tag, tags, handleCollection)
+  $: console.log(tag, tags, handleCollection);
 </script>
 
 <style>
@@ -12,9 +12,6 @@
     align-items: center;
     justify-content: flex-start;
     padding: 0.25rem 1rem;
-  }
-  label.checked {
-    font-weight: 600;
   }
   label:hover {
     background-color: var(--hover);

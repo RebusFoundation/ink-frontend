@@ -16,6 +16,7 @@
     border-radius: 4px;
     align-items: center;
     border: 1px solid var(--rc-main);
+    box-shadow: 1px 2px 2px 0 rgba(133, 133, 133, 0.1);
   }
   li {
     padding: 0;

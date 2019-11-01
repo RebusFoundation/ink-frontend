@@ -12,7 +12,7 @@
   export let side;
   export let id;
   let book;
-  $: if (id && (!book || (id !== book.id))) {
+  $: if (id && (!book || id !== book.id)) {
     book = updateBook(id);
   }
   async function updateBook(id) {

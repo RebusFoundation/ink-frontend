@@ -35,9 +35,14 @@
       left: calc(var(--reader-sidebar-width, 0px) + 13px);
     }
   }
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 </style>
 
-<div>
+<div class="wrapper">
   {#if width <= 1024}
     <div class="Toolbar-link Progress">
       {#if chapters}
