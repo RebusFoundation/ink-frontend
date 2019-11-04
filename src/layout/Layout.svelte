@@ -5,6 +5,7 @@
   import Modals from "./Modals.svelte";
   import Sidebar from "./Sidebar.svelte";
   import { opener, closer } from "../actions/modal.js";
+  import { profile } from "../routes/_profile.js";
   import { stores, goto } from "@sapper/app";
   const { page, session } = stores();
   const { title, infoBook, currentInfoBook, note } = inkStores();
@@ -82,6 +83,8 @@
 
 <svelte:window bind:innerWidth={width} />
 <svelte:body />
+
+{#if $profile.user}
 <Modals {leftSidebar} {rightSidebar} {collection} id={sidebarId} />
 <main class:reader={params.path}>
   <WithSidebars
@@ -108,3 +111,5 @@
     </div>
   </WithSidebars>
 </main>
+
+{/if}

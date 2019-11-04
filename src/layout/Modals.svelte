@@ -13,7 +13,14 @@
 </script>
 
 <style>
-  /* your styles go here */
+  .SignOut {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 0.5rem;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    text-decoration: none;
+  }
 </style>
 
 <SidebarModal id={leftSidebar + '-modal'}>
@@ -24,6 +31,7 @@
   {:else}
     <Collections modal={true} />
   {/if}
+  <a href="/logout" class="SignOut">Sign Out</a>
 </SidebarModal>
 <SidebarModal id={rightSidebar + '-modal'}>
   {#if rightSidebar === 'item'}
